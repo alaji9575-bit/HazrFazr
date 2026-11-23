@@ -162,9 +162,9 @@ $("lifelines").onclick=function(e){
   const same=pool.filter(function(x){return x.q[2]===S.current.data[2]});
   const choices=same.length?same:pool;
   if(!choices.length){alert("لا يوجد سؤال بديل متاح في هذه الفئة.");return}
-  S.lives[S.turn][k]=true;S.used.push(S.current.key);
+  S.lives[S.turn][k]=true;
   const next=choices[Math.floor(Math.random()*choices.length)];
-  S.current={key:next.key,category:S.current.category,index:next.i,data:next.q};
+  S.current={key:S.current.key,category:S.current.category,index:S.current.index,data:next.q};
   S.seconds=30;S.paused=false;stopTimer();renderQuestion();runTimer();return;
  }
  S.lives[S.turn][k]=true;
