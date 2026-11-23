@@ -1,5 +1,5 @@
-const CACHE_NAME="hazrfazr-v2";
-const APP_SHELL=["./","./index.html","./manifest.webmanifest","./icon.svg"];
+const CACHE_NAME="hazrfazr-v3";
+const APP_SHELL=["./","./index.html","./manifest.webmanifest","./icon.svg","./assets/hero.svg","./assets/islamic.svg","./assets/geography.svg","./assets/science.svg","./assets/sports.svg","./assets/space.svg","./assets/animals.svg","./assets/technology.svg","./assets/food.svg","./assets/cinema.svg","./assets/nature.svg","./assets/general.svg"];
 self.addEventListener("install",event=>{
  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)));
  self.skipWaiting();
