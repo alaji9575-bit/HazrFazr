@@ -8242,7 +8242,7 @@ $("lifelines").onclick=function(e){
  if(k==="double"){S.double=true;alert("إذا أجاب الفريق إجابة صحيحة فستُضاعف نقاط السؤال.")}
  if(k==="hint"){alert(S.current.data[3]||"فكّر في المعلومة الأساسية المرتبطة بالسؤال.")}
  if(k==="call"){alert("يمكنكم الآن استشارة صديق شفهيًا قبل اعتماد الإجابة.")}
- renderQuestion();
+ renderQuestion();saveGame();
 };
 $("reset").onclick=function(){if(confirm("هل تريد إنهاء المباراة والعودة إلى البداية؟")){resetMatch();screen("home")}};
 $("newGame").onclick=function(){resetMatch();screen("home")};
