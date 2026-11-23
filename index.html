@@ -8122,8 +8122,7 @@ let pendingSavedGame=null;
 try{
  const savedBank=localStorage.getItem("hazrfazr-bank-v1");
  if(savedBank){const parsed=JSON.parse(savedBank);Object.keys(BANK).forEach(function(k){delete BANK[k]});Object.assign(BANK,parsed)}
- const savedGame=localStorage.getItem("hazrfazr-save-v1");
- if(savedGame)pendingSavedGame=JSON.parse(savedGame);
+ localStorage.removeItem("hazrfazr-save-v1");
 }catch(error){console.warn("تعذر استعادة بيانات المباراة",error)}
 const CATS=Object.keys(BANK);
 const CAT_ICONS={"القرآن الكريم":"📖","الجغرافيا":"🌍","العلوم":"🔬","التاريخ الإسلامي":"🕌","كرة القدم":"⚽","اللغة العربية":"✍️","الأنبياء والرسل":"🌙","الصحابة":"⭐","العواصم والدول":"🏙️","الحيوانات":"🦁","الفضاء والفلك":"🪐","التكنولوجيا":"💻","جسم الإنسان":"🫀","الاختراعات والاكتشافات":"💡","معلومات عامة":"🧠","عالم البحار":"🌊","الألعاب الإلكترونية":"🎮","الأفلام السينمائية":"🎬","السيرة النبوية":"🕋","التاريخ":"🏛️","الشخصيات المشهورة":"👤","النباتات":"🌿","الكيمياء والفيزياء":"⚗️","البيئة والطبيعة":"🌳","الأندية والمنتخبات":"🏆","اللاعبون والمدربون":"🥇","المسلسلات التلفزيونية":"📺","الأنمي والرسوم المتحركة":"🎨","الممثلون والفنانون":"🎭","الهواتف والتطبيقات":"📱","الإنترنت":"🌐","الطعام والمطبخ":"🍲","العلامات التجارية":"🏷️","الألغاز والذكاء":"🧩","الاختراعات الحديثة":"🚀"};
@@ -8134,7 +8133,7 @@ const LIFES=[["call","اتصال بصديق"],["hint","تلميح"],["time","و�
 const $=id=>document.getElementById(id);
 let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0],selected:[],picks:[[],[]],pickTeam:0,used:[],turn:0,current:null,seconds:30,timer:null,paused:false,lives:[{},{}],double:false};
 function saveBank(){try{localStorage.setItem("hazrfazr-bank-v1",JSON.stringify(BANK))}catch(error){console.warn("تعذر حفظ بنك الأسئلة",error)}}
-function saveGame(){try{const active=document.querySelector(".screen.active");localStorage.setItem("hazrfazr-save-v1",JSON.stringify({state:{names:S.names,scores:S.scores,selected:S.selected,picks:S.picks,pickTeam:S.pickTeam,used:S.used,turn:S.turn,current:S.current,seconds:S.seconds,paused:S.paused,lives:S.lives,double:S.double},screen:active?active.id:"home"}))}catch(error){console.warn("تعذر حفظ تقدم المباراة",error)}}
+function saveGame(){try{localStorage.removeItem("hazrfazr-save-v1")}catch(error){console.warn("تعذر حذف الحفظ السابق",error)}}
 function restoreGame(){if(!pendingSavedGame||!pendingSavedGame.state)return;try{Object.assign(S,pendingSavedGame.state);S.timer=null;const target=pendingSavedGame.screen||"home";if($("team1"))$("team1").value=S.names[0]||"";if($("team2"))$("team2").value=S.names[1]||"";if(target==="categories"){renderCats();screen("categories")}else if(target==="board"){renderBoard();screen("board")}else if(target==="question"&&S.current){S.paused=true;renderQuestion();screen("question");runTimer()}else if(target==="answer"&&S.current){$("answerText").textContent=S.current.data[1];screen("answer")}else if(target==="award"&&S.current){$("award1").textContent=S.names[0];$("award2").textContent=S.names[1];$("awardPoints").textContent="قيمة السؤال: "+S.current.data[2]*(S.double?2:1)+" نقطة";screen("award")}else if(target==="results"){ $("finalScores").innerHTML=scoreMarkup();$("winnerText").textContent=S.scores[0]===S.scores[1]?"تعادل رائع!":"الفائز: "+S.names[S.scores[0]>S.scores[1]?0:1];screen("results")}else{screen("home")}saveGame()}catch(error){console.warn("تعذر استعادة المباراة",error);screen("home")}}
 function stopTimer(){clearInterval(S.timer);S.timer=null}
 function screen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id));saveGame()}
@@ -8276,7 +8275,6 @@ $("lifelines").onclick=function(e){
 $("reset").onclick=function(){if(confirm("هل تريد إنهاء المباراة والعودة إلى البداية؟")){resetMatch();screen("home")}};
 $("newGame").onclick=function(){resetMatch();screen("home")};
 document.querySelectorAll("[data-go]").forEach(function(b){b.onclick=function(){screen(b.dataset.go)}});
-restoreGame();
-window.addEventListener("pagehide",saveGame);
+saveGame();
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").catch(function(err){console.log("تعذر تفعيل وضع عدم الاتصال",err)})})}
 </script></body></html>
