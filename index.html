@@ -8274,6 +8274,14 @@ $("lifelines").onclick=function(e){
 $("reset").onclick=function(){if(confirm("هل تريد إنهاء المباراة والعودة إلى البداية؟")){resetMatch();screen("home")}};
 $("newGame").onclick=function(){resetMatch();screen("home")};
 document.querySelectorAll("[data-go]").forEach(function(b){b.onclick=function(){screen(b.dataset.go)}});
-saveGame();
+function startFresh(){
+ stopTimer();
+ S.names=["الفريق الأول","الفريق الثاني"];S.scores=[0,0];S.selected=[];S.picks=[[],[]];S.pickTeam=0;S.used=[];S.turn=0;S.current=null;S.seconds=30;S.paused=false;S.lives=[{},{}];S.double=false;
+ $("team1").value=S.names[0];$("team2").value=S.names[1];
+ document.querySelectorAll(".screen").forEach(function(x){x.classList.toggle("active",x.id==="home")});
+ try{localStorage.removeItem("hazrfazr-save-v1");sessionStorage.clear()}catch(e){}
+}
+window.addEventListener("pageshow",startFresh);
+startFresh();
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").catch(function(err){console.log("تعذر تفعيل وضع عدم الاتصال",err)})})}
 </script></body></html>
