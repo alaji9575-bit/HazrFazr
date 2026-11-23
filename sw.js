@@ -16,7 +16,7 @@ self.addEventListener("fetch",event=>{
    const cached=await cache.match(event.request);
    if(cached)return cached;
    const response=await fetch(event.request);
-   if(response&&response.ok)await cache.put(event.request,response.clone());
+   if(response&&(response.ok||response.type==="opaque"))await cache.put(event.request,response.clone());
    return response;
   }));
   return;
