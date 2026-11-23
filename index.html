@@ -8111,6 +8111,13 @@ function shuffleQuestionBank(){
  });
 }
 shuffleQuestionBank();
+let pendingSavedGame=null;
+try{
+ const savedBank=localStorage.getItem("hazrfazr-bank-v1");
+ if(savedBank){const parsed=JSON.parse(savedBank);Object.keys(BANK).forEach(function(k){delete BANK[k]});Object.assign(BANK,parsed)}
+ const savedGame=localStorage.getItem("hazrfazr-save-v1");
+ if(savedGame)pendingSavedGame=JSON.parse(savedGame);
+}catch(error){console.warn("تعذر استعادة بيانات المباراة",error)}
 const CATS=Object.keys(BANK);
 const CAT_ICONS={"القرآن الكريم":"📖","الجغرافيا":"🌍","العلوم":"🔬","التاريخ الإسلامي":"🕌","كرة القدم":"⚽","اللغة العربية":"✍️","الأنبياء والرسل":"🌙","الصحابة":"⭐","العواصم والدول":"🏙️","الحيوانات":"🦁","الفضاء والفلك":"🪐","التكنولوجيا":"💻","جسم الإنسان":"🫀","الاختراعات والاكتشافات":"💡","معلومات عامة":"🧠","عالم البحار":"🌊","الألعاب الإلكترونية":"🎮","الأفلام السينمائية":"🎬","السيرة النبوية":"🕋","التاريخ":"🏛️","الشخصيات المشهورة":"👤","النباتات":"🌿","الكيمياء والفيزياء":"⚗️","البيئة والطبيعة":"🌳","الأندية والمنتخبات":"🏆","اللاعبون والمدربون":"🥇","المسلسلات التلفزيونية":"📺","الأنمي والرسوم المتحركة":"🎨","الممثلون والفنانون":"🎭","الهواتف والتطبيقات":"📱","الإنترنت":"🌐","الطعام والمطبخ":"🍲","العلامات التجارية":"🏷️","الألغاز والذكاء":"🧩","الاختراعات الحديثة":"🚀"};
 function catIcon(c){return CAT_ICONS[c]||'❖'}
@@ -8119,10 +8126,13 @@ const CAT_PHOTOS={"القرآن الكريم":"islamic.svg","الجغرافيا"
 const LIFES=[["call","اتصال بصديق"],["hint","تلميح"],["time","وقت إضافي"],["change","تغيير السؤال"],["double","مضاعفة النقاط"]];
 const $=id=>document.getElementById(id);
 let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0],selected:[],picks:[[],[]],pickTeam:0,used:[],turn:0,current:null,seconds:30,timer:null,paused:false,lives:[{},{}],double:false};
+function saveBank(){try{localStorage.setItem("hazrfazr-bank-v1",JSON.stringify(BANK))}catch(error){console.warn("تعذر حفظ بنك الأسئلة",error)}}
+function saveGame(){try{const active=document.querySelector(".screen.active");localStorage.setItem("hazrfazr-save-v1",JSON.stringify({state:{names:S.names,scores:S.scores,selected:S.selected,picks:S.picks,pickTeam:S.pickTeam,used:S.used,turn:S.turn,current:S.current,seconds:S.seconds,paused:S.paused,lives:S.lives,double:S.double},screen:active?active.id:"home"}))}catch(error){console.warn("تعذر حفظ تقدم المباراة",error)}}
+function restoreGame(){if(!pendingSavedGame||!pendingSavedGame.state)return;try{Object.assign(S,pendingSavedGame.state);S.timer=null;const target=pendingSavedGame.screen||"home";if($("team1"))$("team1").value=S.names[0]||"";if($("team2"))$("team2").value=S.names[1]||"";if(target==="categories"){renderCats();screen("categories")}else if(target==="board"){renderBoard();screen("board")}else if(target==="question"&&S.current){S.paused=true;renderQuestion();screen("question");runTimer()}else if(target==="answer"&&S.current){$("answerText").textContent=S.current.data[1];screen("answer")}else if(target==="award"&&S.current){$("award1").textContent=S.names[0];$("award2").textContent=S.names[1];$("awardPoints").textContent="قيمة السؤال: "+S.current.data[2]*(S.double?2:1)+" نقطة";screen("award")}else if(target==="results"){ $("finalScores").innerHTML=scoreMarkup();$("winnerText").textContent=S.scores[0]===S.scores[1]?"تعادل رائع!":"الفائز: "+S.names[S.scores[0]>S.scores[1]?0:1];screen("results")}else{screen("home")}saveGame()}catch(error){console.warn("تعذر استعادة المباراة",error);screen("home")}}
 function stopTimer(){clearInterval(S.timer);S.timer=null}
-function screen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id))}
+function screen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id));saveGame()}
 function esc(v){return String(v).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-function resetMatch(){stopTimer();S.scores=[0,0];S.selected=[];S.picks=[[],[]];S.pickTeam=0;S.used=[];S.turn=0;S.current=null;S.seconds=30;S.paused=false;S.lives=[{},{}];S.double=false}
+function resetMatch(){stopTimer();S.scores=[0,0];S.selected=[];S.picks=[[],[]];S.pickTeam=0;S.used=[];S.turn=0;S.current=null;S.seconds=30;S.paused=false;S.lives=[{},{}];S.double=false;saveGame()}
 function scoreMarkup(){return S.names.map(function(n,i){return '<div class="score team-tone-'+i+'"><span>'+esc(n)+'</span><strong>'+S.scores[i]+'</strong></div>'}).join("")}
 function renderCats(){
  const chosen=S.picks[S.pickTeam],other=S.picks[1-S.pickTeam];
@@ -8134,9 +8144,9 @@ function renderCats(){
  $("pickSummary").innerHTML=S.names.map(function(n,i){return '<div class="pick-team team-tone-'+i+'"><strong>'+esc(n)+' ('+S.picks[i].length+'/3)</strong>'+(S.picks[i].length?S.picks[i].map(esc).join(" • "):"لم يختر فئاته بعد")+'</div>'}).join("");
  $("makeBoard").disabled=S.picks[0].length!==3||S.picks[1].length!==3;
 }
-$("start").onclick=function(){shuffleQuestionBank();S.names=[$("team1").value.trim()||"الفريق الأول",$("team2").value.trim()||"الفريق الثاني"];resetMatch();renderCats();screen("categories")};
-$("pickTeam1").onclick=function(){S.pickTeam=0;renderCats()};
-$("pickTeam2").onclick=function(){S.pickTeam=1;renderCats()};
+$("start").onclick=function(){shuffleQuestionBank();saveBank();S.names=[$("team1").value.trim()||"الفريق الأول",$("team2").value.trim()||"الفريق الثاني"];resetMatch();renderCats();screen("categories")};
+$("pickTeam1").onclick=function(){S.pickTeam=0;renderCats();saveGame()};
+$("pickTeam2").onclick=function(){S.pickTeam=1;renderCats();saveGame()};
 $("catGrid").onclick=function(e){const b=e.target.closest("[data-cat]");if(!b)return;const c=b.dataset.cat,chosen=S.picks[S.pickTeam];if(S.picks[1-S.pickTeam].includes(c))return;if(chosen.includes(c))S.picks[S.pickTeam]=chosen.filter(function(x){return x!==c});else if(chosen.length<3)chosen.push(c);renderCats()};
 $("makeBoard").onclick=function(){S.selected=S.picks[0].concat(S.picks[1]);renderBoard();screen("board")};
 function renderBoard(){
@@ -8145,7 +8155,7 @@ function renderBoard(){
  $("boardGrid").innerHTML=S.selected.map(function(c){return '<div class="category-col" style="--cat-photo:url('+catPhoto(c)+')"><h3><span>'+esc(c)+'</span></h3>'+BANK[c].map(function(q,i){const key=c+"-"+i,used=S.used.includes(key);return '<button class="qbtn '+(used?"used":"") +'" data-q="'+esc(key)+'" '+(used?"disabled":"") +'>'+q[2]+'</button>'}).join("")+'</div>'}).join("");
 }
 $("boardGrid").onclick=function(e){const b=e.target.closest("[data-q]");if(!b)return;const key=b.dataset.q;if(S.used.includes(key))return;const i=Number(key.slice(key.lastIndexOf("-")+1)),c=key.slice(0,key.lastIndexOf("-"));S.current={key:key,category:c,index:i,data:BANK[c][i]};S.seconds=30;S.double=false;S.paused=false;renderQuestion();screen("question");runTimer()};
-function runTimer(){stopTimer();if(S.seconds<=0){$("timer").textContent="00";return}S.timer=setInterval(function(){if(S.paused)return;S.seconds=Math.max(0,S.seconds-1);$("timer").textContent=String(S.seconds).padStart(2,"0");if(S.seconds===0)stopTimer()},1000);$("timer").textContent=String(S.seconds).padStart(2,"0")}
+function runTimer(){stopTimer();if(S.seconds<=0){$("timer").textContent="00";return}S.timer=setInterval(function(){if(S.paused)return;S.seconds=Math.max(0,S.seconds-1);$("timer").textContent=String(S.seconds).padStart(2,"0");saveGame();if(S.seconds===0)stopTimer()},1000);$("timer").textContent=String(S.seconds).padStart(2,"0")}
 
 const QUESTION_VISUALS=[
  [["سورة","القرآن","ليلة القدر","البسملة"],"photo-1609599006353-e629aaabfeae"],
@@ -8200,9 +8210,9 @@ function questionPhoto(question,category){return catPhoto(category)}
  $("pause").textContent=S.paused?"استئناف المؤقت":"إيقاف المؤقت";
  $("lifelines").innerHTML=LIFES.map(function(pair){const k=pair[0],n=pair[1];return '<button class="life '+(S.lives[S.turn][k]?"used":"")+'" data-life="'+k+'" '+(S.lives[S.turn][k]?"disabled":"")+'>'+n+'</button>'}).join("");
 }
-$("pause").onclick=function(){if(S.seconds<=0)return;S.paused=!S.paused;if(!S.paused&&!S.timer)runTimer();$("pause").textContent=S.paused?"استئناف المؤقت":"إيقاف المؤقت"};
+$("pause").onclick=function(){if(S.seconds<=0)return;S.paused=!S.paused;if(!S.paused&&!S.timer)runTimer();$("pause").textContent=S.paused?"استئناف المؤقت":"إيقاف المؤقت";saveGame()};
 $("showAnswer").onclick=function(){if(!S.current)return;stopTimer();S.paused=false;$("answerText").textContent=S.current.data[1];screen("answer")};
-$("backQuestion").onclick=function(){screen("question");S.paused=false;renderQuestion();if(S.seconds>0)runTimer()};
+$("backQuestion").onclick=function(){screen("question");S.paused=false;renderQuestion();if(S.seconds>0)runTimer();saveGame()};
 $("chooseTeam").onclick=function(){stopTimer();$("award1").textContent=S.names[0];$("award2").textContent=S.names[1];$("awardPoints").textContent="قيمة السؤال: "+S.current.data[2]*(S.double?2:1)+" نقطة";screen("award")};
 $("backAnswer").onclick=function(){screen("answer")};
 function finishIfDone(){if(S.used.length<36)return false;$("finalScores").innerHTML=scoreMarkup();$("winnerText").textContent=S.scores[0]===S.scores[1]?"تعادل رائع!":"الفائز: "+S.names[S.scores[0]>S.scores[1]?0:1];screen("results");return true}
@@ -8225,7 +8235,7 @@ $("lifelines").onclick=function(e){
   S.lives[S.turn][k]=true;
   const next=choices[Math.floor(Math.random()*choices.length)];
   S.current={key:S.current.key,category:S.current.category,index:S.current.index,data:next.q};
-  S.seconds=30;S.paused=false;stopTimer();renderQuestion();runTimer();return;
+  S.seconds=30;S.paused=false;stopTimer();renderQuestion();runTimer();saveGame();return;
  }
  S.lives[S.turn][k]=true;
  if(k==="time"){S.seconds+=15;$("timer").textContent=String(S.seconds).padStart(2,"0");if(!S.timer&&!S.paused)runTimer()}
