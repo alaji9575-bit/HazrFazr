@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#171326"><title>حزر فزر</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+:root{--bg:#11101b;--panel:#1d1a2d;--panel2:#27223b;--gold:#e8bd67;--text:#f8f4ff;--muted:#aaa4bd;--line:#39334e;--green:#68c9a1}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#29213f 0,#11101b 58%);color:var(--text);font-family:Cairo,Arial,sans-serif;min-height:100vh}
+button,input{font:inherit}button{cursor:pointer;border:0;border-radius:14px;padding:12px 18px;font-weight:800;transition:.18s}button:disabled{opacity:.35;cursor:not-allowed}
+.app{max-width:1100px;margin:auto;padding:24px 18px 60px}.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}.brand{font-size:24px;font-weight:900;color:var(--gold)}.tag{color:var(--muted);font-size:13px}
+.screen{display:none}.screen.active{display:block}.panel{background:linear-gradient(145deg,#211d33,#191626);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 16px 45px #0003}
+h1,h2,h3,p{margin-top:0}h1{font-size:clamp(28px,5vw,46px);line-height:1.35;margin-bottom:10px}h2{font-size:25px} .muted{color:var(--muted)}.gold{color:var(--gold)}
+.hero{text-align:center;padding:48px 24px}.hero p{color:var(--muted);max-width:550px;margin:0 auto 26px}
+.primary{background:var(--gold);color:#21182a}.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.danger{background:#65384a;color:white}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:24px 0}.field label{display:block;color:var(--muted);font-size:13px;margin-bottom:7px}.field input{width:100%;background:#12101d;color:white;border:1px solid var(--line);border-radius:12px;padding:13px;outline:none}
+.cat-grid,.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.cat{background:var(--panel2);border:1px solid var(--line);color:white;text-align:right;min-height:76px}.cat.selected{border-color:var(--gold);background:#40344a;box-shadow:inset 0 0 0 1px var(--gold)}.cat small{display:block;color:var(--muted);font-weight:500}
+.board{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}.category-col{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px}.category-col h3{text-align:center;color:var(--gold);font-size:16px;min-height:48px}.qbtn{display:block;width:100%;margin:8px 0;background:#302a45;color:var(--gold);font-size:20px}.qbtn.used{background:#191622;color:#716b7f;text-decoration:line-through}
+.scores{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0}.score{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:10px 18px;text-align:center;min-width:130px}.score strong{display:block;font-size:23px;color:var(--gold)}
+.question-layout{display:grid;grid-template-columns:1fr 250px;gap:16px}.question-box{text-align:center;display:flex;flex-direction:column;justify-content:center;min-height:300px}.question-text{font-size:clamp(23px,4vw,34px);font-weight:800;line-height:1.6;margin:22px 0}.timer{font-size:32px;color:var(--gold);font-weight:900}.lifelines{display:grid;gap:8px}.life{background:#302a45;color:white;text-align:right;border:1px solid var(--line)}.life.used{opacity:.35;text-decoration:line-through}
+.answer{font-size:clamp(25px,4vw,38px);color:var(--green);font-weight:900;margin:26px 0}.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.team{background:var(--panel2);color:white;border:1px solid var(--line);font-size:20px;padding:25px 8px}.winner{text-align:center;font-size:26px;color:var(--gold);font-weight:900}
+@media(max-width:700px){.app{padding:15px 12px 40px}.fields,.question-layout{grid-template-columns:1fr}.cat-grid,.board{grid-template-columns:repeat(2,minmax(0,1fr))}.team-grid{grid-template-columns:1fr}.panel{padding:18px}.hero{padding:36px 16px}}
+</style></head>
+<body><main class="app">
+<header class="top"><div class="brand">✦ حزر فزر</div><div class="tag">تحدّي المعرفة بين فريقين</div></header>
+<section id="home" class="screen active"><div class="panel hero"><div class="gold">لعبة جماعية على جهاز واحد</div><h1>من يعرف أكثر؟</h1><p>اختروا الفئات، اجمعوا النقاط، واستخدموا وسائل المساعدة للفوز بالتحدّي.</p>
+<div class="fields"><div class="field"><label>اسم الفريق الأول</label><input id="team1" maxlength="20" value="الفريق الأول"></div><div class="field"><label>اسم الفريق الثاني</label><input id="team2" maxlength="20" value="الفريق الثاني"></div></div><button class="primary" id="start">ابدأ التحدي ←</button></div></section>
+<section id="categories" class="screen"><div class="panel"><h2>اختيار الفئات</h2><p class="muted">اختاروا 6 فئات لتكوين لوحة الأسئلة. <b id="catCount" class="gold">0 / 6</b></p><div id="catGrid" class="cat-grid"></div><div class="actions"><button class="secondary" data-go="home">رجوع</button><button class="primary" id="makeBoard" disabled>إنشاء لوحة الأسئلة</button></div></div></section>
+<section id="board" class="screen"><div class="panel"><h2>لوحة الأسئلة</h2><div class="scores" id="boardScores"></div><p class="muted" id="turnText"></p><div id="boardGrid" class="board"></div><div class="actions"><button class="secondary" id="reset">إنهاء والعودة للبداية</button></div></div></section>
+<section id="question" class="screen"><div class="scores" id="questionScores"></div><div class="question-layout"><div class="panel question-box"><div class="muted" id="qMeta"></div><div class="timer" id="timer">30</div><div class="question-text" id="qText"></div><div class="actions"><button class="secondary" id="pause">إيقاف المؤقت</button><button class="primary" id="showAnswer">إظهار الإجابة</button></div></div><aside class="panel"><h3 class="gold">وسائل المساعدة</h3><div class="lifelines" id="lifelines"></div></aside></div></section>
+<section id="answer" class="screen"><div class="panel" style="text-align:center"><div class="muted">الإجابة الصحيحة</div><div id="answerText" class="answer"></div><div class="actions"><button class="secondary" id="backQuestion">العودة للسؤال</button><button class="primary" id="chooseTeam">تحديد الفريق</button></div></div></section>
+<section id="award" class="screen"><div class="panel"><h2 style="text-align:center">من يستحق النقاط؟</h2><div class="team-grid"><button class="team" data-winner="0" id="award1"></button><button class="team" data-winner="1" id="award2"></button><button class="team" data-winner="-1">ولا أحد</button></div><div class="actions"><button class="secondary" id="backAnswer">العودة للإجابة</button></div></div></section>
+<section id="results" class="screen"><div class="panel" style="text-align:center"><div class="gold">انتهى التحدي</div><h1>النتيجة النهائية</h1><div id="finalScores" class="scores"></div><div id="winnerText" class="winner"></div><div class="actions"><button class="primary" id="newGame">تحدٍ جديد</button></div></div></section>
+</main>
+<script>
+const BANK={
+"القرآن الكريم":[["ما السورة التي تُسمّى قلب القرآن؟","سورة يس",200],["كم عدد سور القرآن الكريم؟","114 سورة",200],["ما أطول سورة في القرآن؟","سورة البقرة",400],["ما السورة التي لا تبدأ بالبسملة؟","سورة التوبة",400],["في أي ليلة بدأ نزول القرآن؟","ليلة القدر",600],["ما السورة التي وردت فيها البسملة مرتين؟","سورة النمل",600]],
+"الجغرافيا":[["ما عاصمة اليابان؟","طوكيو",200],["ما أكبر قارة في العالم؟","آسيا",200],["ما أكبر محيط على الأرض؟","المحيط الهادئ",400],["ما عاصمة أستراليا؟","كانبيرا",400],["ما الدولة التي تُعرف بأرض الألف بحيرة؟","فنلندا",600],["ما المضيق الذي يفصل بين المغرب وإسبانيا؟","مضيق جبل طارق",600]],
+"العلوم":[["ما الغاز الذي تمتصه النباتات؟","ثاني أكسيد الكربون",200],["ما الكوكب المعروف بالكوكب الأحمر؟","المريخ",200],["ما وحدة قياس شدة التيار الكهربائي؟","الأمبير",400],["ما العنصر الكيميائي الذي رمزه O؟","الأكسجين",400],["ما الجزء المسؤول عن إنتاج الطاقة في الخلية؟","الميتوكوندريا",600],["ما اسم تحول المادة من الحالة الصلبة إلى الغازية مباشرة؟","التسامي",600]],
+"التاريخ الإسلامي":[["في أي عام كانت الهجرة النبوية؟","622 ميلادية",200],["ما أول معركة كبرى في الإسلام؟","غزوة بدر",200],["من أول الخلفاء الراشدين؟","أبو بكر الصديق",400],["ما عاصمة الدولة الأموية؟","دمشق",400],["من القائد الذي فتح القسطنطينية؟","محمد الفاتح",600],["في أي عام وقعت معركة حطين؟","1187 ميلادية",600]],
+"كرة القدم":[["كم لاعبًا يشارك من كل فريق داخل الملعب؟","11 لاعبًا",200],["ما مدة المباراة الرسمية دون الوقت بدل الضائع؟","90 دقيقة",200],["ما المنتخب الفائز بكأس العالم 2022؟","الأرجنتين",400],["كم عدد التبديلات المسموح بها غالبًا في المباراة؟","خمسة تبديلات",400],["ما النادي الملقب بالسيدة العجوز؟","يوفنتوس",600],["من فاز بأول نسخة من كأس العالم عام 1930؟","الأوروغواي",600]],
+"اللغة العربية":[["ما جمع كلمة كتاب؟","كتب",200],["ما ضد كلمة الشجاعة؟","الجبن",200],["ما نوع الهمزة في كلمة أحمد؟","همزة قطع",400],["ما علامة رفع المثنى؟","الألف",400],["ما الاسم الذي يدل على حدث وزمن؟","الفعل",600],["ما البحر الشعري الذي تفعيلته (فعولن مفاعيلن)؟","البحر الطويل",600]]
+};
+const CATS=Object.keys(BANK), LIFES=[["call","اتصال بصديق"],["hint","تلميح"],["time","وقت إضافي"],["change","تغيير السؤال"],["double","مضاعفة النقاط"]];
+let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0],selected:[],used:[],turn:0,current:null,seconds:30,timer:null,paused:false,lives:[{},{}],double:false};
+const $=id=>document.getElementById(id);
+function screen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id))}
+function scores(id){$(id).innerHTML=S.names.map((n,i)=>'<div class="score">'+n+'<strong>'+S.scores[i]+'</strong></div>').join("")}
+function init(){S={...S,scores:[0,0],selected:[],used:[],turn:0,current:null,seconds:30,paused:false,lives:[{},{}],double:false};}
+$("start").onclick=()=>{S.names=[$("team1").value.trim()||"الفريق الأول",$("team2").value.trim()||"الفريق الثاني"];init();renderCats();screen("categories")};
+function renderCats(){$("catGrid").innerHTML=CATS.map(c=>'<button class="cat '+(S.selected.includes(c)?"selected":"")+'" data-cat="'+c+'">'+c+'<small>6 أسئلة</small></button>').join("");$("catCount").textContent=S.selected.length+" / 6";$("makeBoard").disabled=S.selected.length!==6}
+$("catGrid").onclick=e=>{let b=e.target.closest("[data-cat]");if(!b)return;let c=b.dataset.cat;if(S.selected.includes(c))S.selected=S.selected.filter(x=>x!==c);else if(S.selected.length<6)S.selected.push(c);renderCats()};
+$("makeBoard").onclick=()=>{renderBoard();screen("board")};
+function renderBoard(){scores("boardScores");$("turnText").textContent="الدور الحالي: "+S.names[S.turn];$("boardGrid").innerHTML=S.selected.map(c=>'<div class="category-col"><h3>'+c+'</h3>'+BANK[c].map((q,i)=>{let key=c+"-"+i;return '<button class="qbtn '+(S.used.includes(key)?"used":"")+'" data-q="'+key+'" '+(S.used.includes(key)?"disabled":"")+'>'+q[2]+'</button>'}).join("")+'</div>').join("")}
+$("boardGrid").onclick=e=>{let b=e.target.closest("[data-q]");if(!b)return;let [c,i]=[b.dataset.q.slice(0,b.dataset.q.lastIndexOf("-")),+b.dataset.q.split("-").pop()];S.current={key:b.dataset.q,category:c,index:i,data:BANK[c][i]};S.seconds=30;S.double=false;renderQuestion();screen("question");runTimer()};
+function stopTimer(){clearInterval(S.timer);S.timer=null}
+function runTimer(){stopTimer();$("timer").textContent=S.seconds;S.timer=setInterval(()=>{if(S.paused)return;S.seconds--; $("timer").textContent=S.seconds;if(S.seconds<=0)stopTimer()},1000)}
+function renderQuestion(){scores("questionScores");$("qMeta").textContent=S.current.category+" • "+S.current.data[2]+" نقطة • "+S.names[S.turn];$("qText").textContent=S.current.data[0];$("lifelines").innerHTML=LIFES.map(([k,n])=>'<button class="life '+(S.lives[S.turn][k]?"used":"")+'" data-life="'+k+'" '+(S.lives[S.turn][k]?"disabled":"")+'>'+n+'</button>').join("")}
+$("pause").onclick=()=>{S.paused=!S.paused;$("pause").textContent=S.paused?"استئناف المؤقت":"إيقاف المؤقت";if(!S.paused&&!S.timer)runTimer()};
+$("showAnswer").onclick=()=>{stopTimer();$("answerText").textContent=S.current.data[1];screen("answer")};
+$("backQuestion").onclick=()=>{screen("question");S.paused=false;$("pause").textContent="إيقاف المؤقت";if(S.seconds>0)runTimer()};
+$("chooseTeam").onclick=()=>{stopTimer();$("award1").textContent=S.names[0];$("award2").textContent=S.names[1];screen("award")};
+$("backAnswer").onclick=()=>screen("answer");
+$("award").onclick=e=>{let b=e.target.closest("[data-winner]");if(!b)return;let w=+b.dataset.winner,pts=S.current.data[2]*(S.double?2:1);S.used.push(S.current.key);if(w>=0){S.scores[w]+=pts;S.turn=1-w}else S.turn=1-S.turn;stopTimer();if(S.used.length===36){scores("finalScores");let win=S.scores[0]===S.scores[1]?"تعادل رائع!": "الفائز: "+S.names[S.scores[0]>S.scores[1]?0:1];$("winnerText").textContent=win;screen("results")}else{renderBoard();screen("board")}};
+$("lifelines").onclick=e=>{let b=e.target.closest("[data-life]");if(!b)return;let k=b.dataset.life;S.lives[S.turn][k]=true;if(k==="time"){S.seconds+=15;$("timer").textContent=S.seconds;if(!S.timer)runTimer()}else if(k==="double"){S.double=true;alert("ستُضاعف نقاط هذا السؤال إذا أجاب الفريق إجابة صحيحة.")}else if(k==="change"){S.used.push(S.current.key);stopTimer();renderBoard();screen("board");return}else if(k==="hint"){alert("تلميح: فكّر في المعلومات الأساسية المرتبطة بالسؤال.")}else if(k==="call"){alert("يمكنك استشارة صديق شفهيًا قبل الإجابة.")}renderQuestion()};
+$("reset").onclick=()=>{stopTimer();screen("home")};$("newGame").onclick=()=>{stopTimer();screen("home")};
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>screen(b.dataset.go));
+</script></body></html>
