@@ -115,7 +115,7 @@ function resetMatch(){stopTimer();S.scores=[0,0];S.selected=[];S.picks=[[],[]];S
 function scoreMarkup(){return S.names.map(function(n,i){return '<div class="score">'+esc(n)+'<strong>'+S.scores[i]+'</strong></div>'}).join("")}
 function renderCats(){
  const chosen=S.picks[S.pickTeam],other=S.picks[1-S.pickTeam];
- $("catGrid").innerHTML=CATS.map(function(c){return '<button class="cat '+(chosen.includes(c)?"selected":"")+' '+(other.includes(c)?"taken":"")+'" data-cat="'+esc(c)+'" '+(other.includes(c)?"disabled":"")+'>'<span class="cat-icon">'+catIcon(c)+'</span>'+esc(c)+'<small>6 أسئلة</small></button>'}).join("");
+ $("catGrid").innerHTML=CATS.map(function(c){return '<button class="cat '+(chosen.includes(c)?"selected":"") +' '+(other.includes(c)?"taken":"") +'" data-cat="'+esc(c)+'" '+(other.includes(c)?"disabled":"") +'><span class="cat-icon">'+catIcon(c)+'</span>'+esc(c)+'<small>6 أسئلة</small></button>'}).join("");
  $("catCount").textContent=chosen.length+" / 3";
  $("pickPrompt").textContent="الفئات التي يختارها الآن: "+S.names[S.pickTeam];
  $("pickTeam1").className=S.pickTeam===0?"primary":"secondary";
