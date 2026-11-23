@@ -8136,8 +8136,10 @@ try{
 const CATS=Object.keys(BANK);
 const CAT_ICONS={"القرآن الكريم":"📖","الجغرافيا":"🌍","العلوم":"🔬","التاريخ الإسلامي":"🕌","كرة القدم":"⚽","اللغة العربية":"✍️","الأنبياء والرسل":"🌙","الصحابة":"⭐","العواصم والدول":"🏙️","الحيوانات":"🦁","الفضاء والفلك":"🪐","التكنولوجيا":"💻","جسم الإنسان":"🫀","الاختراعات والاكتشافات":"💡","معلومات عامة":"🧠","عالم البحار":"🌊","الألعاب الإلكترونية":"🎮","الأفلام السينمائية":"🎬","السيرة النبوية":"🕋","التاريخ":"🏛️","الشخصيات المشهورة":"👤","النباتات":"🌿","الكيمياء والفيزياء":"⚗️","البيئة والطبيعة":"🌳","الأندية والمنتخبات":"🏆","اللاعبون والمدربون":"🥇","المسلسلات التلفزيونية":"📺","الأنمي والرسوم المتحركة":"🎨","الممثلون والفنانون":"🎭","الهواتف والتطبيقات":"📱","الإنترنت":"🌐","الطعام والمطبخ":"🍲","العلامات التجارية":"🏷️","الألغاز والذكاء":"🧩","الاختراعات الحديثة":"🚀"};
 function catIcon(c){return CAT_ICONS[c]||'❖'}
-const CAT_PHOTOS=Object.fromEntries(CATS.map((c,i)=>[c,"cat-"+String(i+1).padStart(2,"0")+".svg"]));
- function catPhoto(c){return "./assets/"+(CAT_PHOTOS[c]||"cat-15.svg")}
+const CATEGORY_PHOTOS=["photo-1609599006353-e629aaabfeae","photo-1524666041070-9a8766f90120","photo-1532094349884-543bc11b234d","photo-1564121211835-e88c852648ab","photo-1574629810360-7efbbe195018","photo-1455390582262-044cdead277a","photo-1542810634-71277d95dcbb","photo-1609599006353-e629aaabfeae","photo-1524666041070-9a8766f90120","photo-1546182990-dffeafbe841d","photo-1462331940025-496dfbfc7564","photo-1518770660439-4636190af475","photo-1530026405186-ed1f139313f8","photo-1581091226825-a6a2a5aee158","photo-1503676260728-1c00da094a0b","photo-1500375592092-40eb2168fd21","photo-1542751371-adc38448a05e","photo-1489599849927-2ee91cede3ba","photo-1542810634-71277d95dcbb","photo-1461360228754-6e81c478b882","photo-1500648767791-00dcc994a43e","photo-1416879595882-3373a0480b5b","photo-1532094349884-543bc11b234d","photo-1448375240586-882707db888b","photo-1522778119026-d647f0596c20","photo-1517649763962-0c623066013b","photo-1522869635100-9f4c5e86aa37","photo-1578632767115-351597cf2477","photo-1485846234645-a62644f84728","photo-1511707171634-5f897ff02aa9","photo-1558494949-ef010cbdcc31","photo-1490645935967-10de6ba17061","photo-1441986300917-64674bd600d8","photo-1606092195730-5d7b9af1efc5","photo-1581091226825-a6a2a5aee158"];
+ const CAT_PHOTOS=Object.fromEntries(CATS.map((c,i)=>[c,CATEGORY_PHOTOS[i]||CATEGORY_PHOTOS[14]]));
+ function photoUrl(id){return "https://images.unsplash.com/"+id+"?auto=format&fit=crop&w=1000&q=82"}
+ function catPhoto(c){return photoUrl(CAT_PHOTOS[c]||CATEGORY_PHOTOS[14])}
 const LIFES=[["call","اتصال بصديق"],["hint","تلميح"],["time","وقت إضافي"],["change","تغيير السؤال"],["double","مضاعفة النقاط"]];
 const $=id=>document.getElementById(id);
 let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0],selected:[],picks:[[],[]],pickTeam:0,used:[],turn:0,current:null,seconds:30,timer:null,paused:false,lives:[{},{}],double:false};
@@ -8216,27 +8218,9 @@ const QUESTION_VISUALS=[
  [["NFC","ثلاثية الأبعاد","البطاريات","Bluetooth","الواقع المعزز","الخلايا الكهروضوئية"],"photo-1581091226825-a6a2a5aee158"]
 ];
 function questionPhoto(question,category){
- const q=String(question||"");
- const rules=[
-  [/قرآن|سورة|آية|القرآن|البسملة|القدر/,"cat-01.svg"],
-  [/اليابان|طوكيو|قارة|محيط|عاصمة|مدينة|دولة|نهر|جبل|مضيق/,"cat-02.svg"],
-  [/ذرة|أكسجين|كيمياء|فيزياء|نيوتن|طاقة|عنصر|خلية|تفاعل/,"cat-03.svg"],
-  [/كرة|ملعب|هدف|الدوري|منتخب|لاعب|مدرب|بطولة/,"cat-05.svg"],
-  [/نبي|الأنبياء|رسول|محمد|الهجرة|غزوة|صحابي|الخلفاء|السيرة|مكة|المدينة/,"cat-07.svg"],
-  [/حيوان|فهد|أسد|حوت|طائر|سمك|فيل|ذئب/,"cat-10.svg"],
-  [/فضاء|كوكب|مريخ|قمر|شمس|مجرة|نجوم/,"cat-11.svg"],
-  [/حاسوب|كمبيوتر|معالج|تقنية|هاتف|تطبيق|إنترنت|شبكة|موقع|رقمي/,"cat-12.svg"],
-  [/قلب|جسم|عظام|جلد|رئة|دم|عضو|إنسان/,"cat-13.svg"],
-  [/بحر|محيط|أخطبوط|شعاب|سمك|موج/,"cat-16.svg"],
-  [/لعبة|ألعاب|بلايستيشن|ماريو|ماينكرافت|شطرنج/,"cat-17.svg"],
-  [/فيلم|سينما|ممثل|مخرج|أوسكار|مسلسل/,"cat-18.svg"],
-  [/نبات|زهرة|شجرة|ورقة|بناء ضوئي|غابة|بيئة/,"cat-22.svg"],
-  [/طعام|طبق|بيتزا|مطبخ|سوشي|وجبة/,"cat-32.svg"],
-  [/لغز|ذكاء|عدد|احسب|التالي|منطق/,"cat-34.svg"],
-  [/اختراع|روبوت|ابتكار|بطارية|طباعة ثلاثية/,"cat-35.svg"]
- ];
- const hit=rules.find(([re])=>re.test(q));
- return "./assets/"+(hit?hit[1]:(CAT_PHOTOS[category]||"cat-15.svg"));
+ const q=String(question||"").toLowerCase();
+ const match=QUESTION_VISUALS.find(([words])=>words.some(word=>q.includes(String(word).toLowerCase())));
+ return match?photoUrl(match[1]):catPhoto(category);
 }
 
  function renderQuestion(){
