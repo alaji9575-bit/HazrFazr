@@ -145,6 +145,12 @@ button{border-radius:13px;letter-spacing:.1px}
 .question-box{gap:2px}
 @media(orientation:landscape) and (max-height:520px){.question-image{height:clamp(85px,24vh,145px);margin:5px auto 2px}.question-box{min-height:calc(100vh - 100px)}}
 
+
+.team-turn{display:inline-block;padding:10px 16px;border-radius:12px;font-weight:900}
+.team-turn.team-tone-0,.question-meta.team-tone-0{color:#8be6ff;background:#51c9ef16;border:1px solid #51c9ef66}
+.team-turn.team-tone-1,.question-meta.team-tone-1{color:#d0b7ff;background:#b18aff16;border:1px solid #b18aff66}
+.question-meta{display:inline-block;align-self:center;padding:7px 14px;border-radius:999px;font-weight:800}
+
 </style></head>
 <body><div id="rotateNotice"><div class="rotate-icon">↻</div><h2>أدر هاتفك إلى الوضع الأفقي</h2><p>لأفضل تجربة لعب، تُعرض حزر فزر بالعرض مثل ألعاب المسابقات.</p></div><main class="app">
 <header class="top"><div class="brand">✦ حزر فزر</div><div class="tag">تحدّي المعرفة بين فريقين</div></header>
@@ -225,7 +231,7 @@ $("catGrid").onclick=function(e){const b=e.target.closest("[data-cat]");if(!b)re
 $("makeBoard").onclick=function(){S.selected=S.picks[0].concat(S.picks[1]);renderBoard();screen("board")};
 function renderBoard(){
  $("boardScores").innerHTML=scoreMarkup();
- $("turnText").textContent="الدور الحالي: "+S.names[S.turn]+" — الأسئلة المتبقية: "+(36-S.used.length);
+ $("turnText").className="team-turn team-tone-"+S.turn;$("turnText").textContent="الدور الحالي: "+S.names[S.turn]+" — الأسئلة المتبقية: "+(36-S.used.length);
  $("boardGrid").innerHTML=S.selected.map(function(c){return '<div class="category-col" style="--cat-photo:url('+catPhoto(c)+')"><h3><span>'+esc(c)+'</span></h3>'+BANK[c].map(function(q,i){const key=c+"-"+i,used=S.used.includes(key);return '<button class="qbtn '+(used?"used":"") +'" data-q="'+esc(key)+'" '+(used?"disabled":"") +'>'+q[2]+'</button>'}).join("")+'</div>'}).join("");
 }
 $("boardGrid").onclick=function(e){const b=e.target.closest("[data-q]");if(!b)return;const key=b.dataset.q;if(S.used.includes(key))return;const i=Number(key.slice(key.lastIndexOf("-")+1)),c=key.slice(0,key.lastIndexOf("-"));S.current={key:key,category:c,index:i,data:BANK[c][i]};S.seconds=30;S.double=false;S.paused=false;renderQuestion();screen("question");runTimer()};
@@ -282,7 +288,7 @@ function questionPhoto(question,category){
 
 function renderQuestion(){
  $("questionScores").innerHTML=scoreMarkup();
- $("qMeta").textContent=S.current.category+" • "+S.current.data[2]+" نقطة • دور "+S.names[S.turn];
+ $("qMeta").className="question-meta team-tone-"+S.turn;$("qMeta").textContent=S.current.category+" • "+S.current.data[2]+" نقطة • دور "+S.names[S.turn];
  $("qText").textContent=S.current.data[0];
  const qi=$("qImage");qi.src=questionPhoto(S.current.data[0],S.current.category);qi.alt="صورة توضيحية: "+S.current.data[0];qi.onerror=function(){this.onerror=null;this.src=catPhoto(S.current.category)};
  $("pause").textContent=S.paused?"استئناف المؤقت":"إيقاف المؤقت";
