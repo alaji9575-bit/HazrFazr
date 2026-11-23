@@ -8247,5 +8247,7 @@ $("lifelines").onclick=function(e){
 $("reset").onclick=function(){if(confirm("هل تريد إنهاء المباراة والعودة إلى البداية؟")){resetMatch();screen("home")}};
 $("newGame").onclick=function(){resetMatch();screen("home")};
 document.querySelectorAll("[data-go]").forEach(function(b){b.onclick=function(){screen(b.dataset.go)}});
+restoreGame();
+window.addEventListener("pagehide",saveGame);
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").catch(function(err){console.log("تعذر تفعيل وضع عدم الاتصال",err)})})}
 </script></body></html>
