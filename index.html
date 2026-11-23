@@ -66,7 +66,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;ba
 h1{font-size:clamp(32px,5vw,56px);letter-spacing:-1px;line-height:1.22}
 h2{font-size:27px;letter-spacing:-.3px}
 .gold{color:var(--gold)}.muted{color:#a9bad0}
-.hero{position:relative;overflow:hidden;text-align:right;padding:clamp(28px,5vw,62px);min-height:430px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;background:linear-gradient(90deg,#0a1930 0%,#0a1930e8 43%,#0a193055 100%),url("/assets/hero.svg") center/cover}
+.hero{position:relative;overflow:hidden;text-align:right;padding:clamp(28px,5vw,62px);min-height:430px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;background:linear-gradient(90deg,#0a1930 0%,#0a1930e8 43%,#0a193055 100%),url("./assets/hero.svg") center/cover}
 .hero:after{content:"";position:absolute;inset:0 auto 0 0;width:7px;background:linear-gradient(var(--cyan),var(--gold))}
 .hero>*{position:relative;z-index:1}
 .hero>div:first-child{display:inline-flex;align-items:center;gap:8px;border:1px solid #53d9d355;background:#53d9d31b;color:#8cece3;border-radius:30px;padding:8px 14px;font-size:13px;font-weight:800}
@@ -8122,7 +8122,7 @@ const CATS=Object.keys(BANK);
 const CAT_ICONS={"القرآن الكريم":"📖","الجغرافيا":"🌍","العلوم":"🔬","التاريخ الإسلامي":"🕌","كرة القدم":"⚽","اللغة العربية":"✍️","الأنبياء والرسل":"🌙","الصحابة":"⭐","العواصم والدول":"🏙️","الحيوانات":"🦁","الفضاء والفلك":"🪐","التكنولوجيا":"💻","جسم الإنسان":"🫀","الاختراعات والاكتشافات":"💡","معلومات عامة":"🧠","عالم البحار":"🌊","الألعاب الإلكترونية":"🎮","الأفلام السينمائية":"🎬","السيرة النبوية":"🕋","التاريخ":"🏛️","الشخصيات المشهورة":"👤","النباتات":"🌿","الكيمياء والفيزياء":"⚗️","البيئة والطبيعة":"🌳","الأندية والمنتخبات":"🏆","اللاعبون والمدربون":"🥇","المسلسلات التلفزيونية":"📺","الأنمي والرسوم المتحركة":"🎨","الممثلون والفنانون":"🎭","الهواتف والتطبيقات":"📱","الإنترنت":"🌐","الطعام والمطبخ":"🍲","العلامات التجارية":"🏷️","الألغاز والذكاء":"🧩","الاختراعات الحديثة":"🚀"};
 function catIcon(c){return CAT_ICONS[c]||'❖'}
 const CAT_PHOTOS={"القرآن الكريم":"islamic.svg","الجغرافيا":"geography.svg","العلوم":"science.svg","التاريخ الإسلامي":"islamic.svg","كرة القدم":"sports.svg","اللغة العربية":"general.svg","الأنبياء والرسل":"islamic.svg","الصحابة":"islamic.svg","العواصم والدول":"geography.svg","الحيوانات":"animals.svg","الفضاء والفلك":"space.svg","التكنولوجيا":"technology.svg","جسم الإنسان":"science.svg","الاختراعات والاكتشافات":"technology.svg","معلومات عامة":"general.svg","عالم البحار":"geography.svg","الألعاب الإلكترونية":"technology.svg","الأفلام السينمائية":"cinema.svg","السيرة النبوية":"islamic.svg","التاريخ":"general.svg","الشخصيات المشهورة":"general.svg","النباتات":"nature.svg","الكيمياء والفيزياء":"science.svg","البيئة والطبيعة":"nature.svg","الأندية والمنتخبات":"sports.svg","اللاعبون والمدربون":"sports.svg","المسلسلات التلفزيونية":"cinema.svg","الأنمي والرسوم المتحركة":"cinema.svg","الممثلون والفنانون":"cinema.svg","الهواتف والتطبيقات":"technology.svg","الإنترنت":"technology.svg","الطعام والمطبخ":"food.svg","العلامات التجارية":"general.svg","الألغاز والذكاء":"general.svg","الاختراعات الحديثة":"technology.svg"};
- function catPhoto(c){return "/assets/"+(CAT_PHOTOS[c]||"general.svg")}
+ function catPhoto(c){return "./assets/"+(CAT_PHOTOS[c]||"general.svg")}
 const LIFES=[["call","اتصال بصديق"],["hint","تلميح"],["time","وقت إضافي"],["change","تغيير السؤال"],["double","مضاعفة النقاط"]];
 const $=id=>document.getElementById(id);
 let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0],selected:[],picks:[[],[]],pickTeam:0,used:[],turn:0,current:null,seconds:30,timer:null,paused:false,lives:[{},{}],double:false};
@@ -8147,7 +8147,7 @@ function renderCats(){
 $("start").onclick=function(){shuffleQuestionBank();saveBank();S.names=[$("team1").value.trim()||"الفريق الأول",$("team2").value.trim()||"الفريق الثاني"];resetMatch();renderCats();screen("categories")};
 $("pickTeam1").onclick=function(){S.pickTeam=0;renderCats();saveGame()};
 $("pickTeam2").onclick=function(){S.pickTeam=1;renderCats();saveGame()};
-$("catGrid").onclick=function(e){const b=e.target.closest("[data-cat]");if(!b)return;const c=b.dataset.cat,chosen=S.picks[S.pickTeam];if(S.picks[1-S.pickTeam].includes(c))return;if(chosen.includes(c))S.picks[S.pickTeam]=chosen.filter(function(x){return x!==c});else if(chosen.length<3)chosen.push(c);renderCats()};
+$("catGrid").onclick=function(e){const b=e.target.closest("[data-cat]");if(!b)return;const c=b.dataset.cat,chosen=S.picks[S.pickTeam];if(S.picks[1-S.pickTeam].includes(c))return;if(chosen.includes(c))S.picks[S.pickTeam]=chosen.filter(function(x){return x!==c});else if(chosen.length<3)chosen.push(c);renderCats();saveGame()};
 $("makeBoard").onclick=function(){S.selected=S.picks[0].concat(S.picks[1]);renderBoard();screen("board")};
 function renderBoard(){
  $("boardScores").innerHTML=scoreMarkup();
