@@ -172,11 +172,11 @@ const BANK={
 
 };
 const CATS=Object.keys(BANK), LIFES=[["call","اتصال بصديق"],["hint","تلميح"],["time","وقت إضافي"],["change","تغيير السؤال"],["double","مضاعفة النقاط"]];
-let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0],selected:[],used:[],turn:0,current:null,seconds:30,timer:null,paused:false,lives:[{},{}],double:false};
+let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0],selected:[],used:[],playedCount:0,turn:0,current:null,seconds:30,timer:null,paused:false,lives:[{},{}],double:false};
 const $=id=>document.getElementById(id);
 function screen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id))}
 function scores(id){$(id).innerHTML=S.names.map((n,i)=>'<div class="score">'+n+'<strong>'+S.scores[i]+'</strong></div>').join("")}
-function init(){S={...S,scores:[0,0],selected:[],used:[],turn:0,current:null,seconds:30,paused:false,lives:[{},{}],double:false};}
+function init(){S={...S,scores:[0,0],selected:[],used:[],playedCount:0,turn:0,current:null,seconds:30,paused:false,lives:[{},{}],double:false};}
 $("start").onclick=()=>{S.names=[$("team1").value.trim()||"الفريق الأول",$("team2").value.trim()||"الفريق الثاني"];init();renderCats();screen("categories")};
 function renderCats(){$("catGrid").innerHTML=CATS.map(c=>'<button class="cat '+(S.selected.includes(c)?"selected":"")+'" data-cat="'+c+'">'+c+'<small>6 أسئلة</small></button>').join("");$("catCount").textContent=S.selected.length+" / 6";$("makeBoard").disabled=S.selected.length!==6}
 $("catGrid").onclick=e=>{let b=e.target.closest("[data-cat]");if(!b)return;let c=b.dataset.cat;if(S.selected.includes(c))S.selected=S.selected.filter(x=>x!==c);else if(S.selected.length<6)S.selected.push(c);renderCats()};
@@ -191,7 +191,7 @@ $("showAnswer").onclick=()=>{stopTimer();$("answerText").textContent=S.current.d
 $("backQuestion").onclick=()=>{screen("question");S.paused=false;$("pause").textContent="إيقاف المؤقت";if(S.seconds>0)runTimer()};
 $("chooseTeam").onclick=()=>{stopTimer();$("award1").textContent=S.names[0];$("award2").textContent=S.names[1];screen("award")};
 $("backAnswer").onclick=()=>screen("answer");
-$("award").onclick=e=>{let b=e.target.closest("[data-winner]");if(!b)return;let w=+b.dataset.winner,pts=S.current.data[2]*(S.double?2:1);S.used.push(S.current.key);if(w>=0){S.scores[w]+=pts;S.turn=1-w}else S.turn=1-S.turn;stopTimer();if(S.used.length===36){scores("finalScores");let win=S.scores[0]===S.scores[1]?"تعادل رائع!": "الفائز: "+S.names[S.scores[0]>S.scores[1]?0:1];$("winnerText").textContent=win;screen("results")}else{renderBoard();screen("board")}};
+$("award").onclick=e=>{let b=e.target.closest("[data-winner]");if(!b)return;let w=+b.dataset.winner,pts=S.current.data[2]*(S.double?2:1);S.used.push(S.current.key);S.playedCount++;if(w>=0){S.scores[w]+=pts;S.turn=1-w}else S.turn=1-S.turn;stopTimer();if(S.playedCount===36){scores("finalScores");let win=S.scores[0]===S.scores[1]?"تعادل رائع!": "الفائز: "+S.names[S.scores[0]>S.scores[1]?0:1];$("winnerText").textContent=win;screen("results")}else{renderBoard();screen("board")}};
 $("lifelines").onclick=e=>{let b=e.target.closest("[data-life]");if(!b)return;let k=b.dataset.life;S.lives[S.turn][k]=true;if(k==="time"){S.seconds+=15;$("timer").textContent=S.seconds;if(!S.timer)runTimer()}else if(k==="double"){S.double=true;alert("ستُضاعف نقاط هذا السؤال إذا أجاب الفريق إجابة صحيحة.")}else if(k==="change"){const pool=BANK[S.current.category].map((q,i)=>({q,i,key:S.current.category+"-"+i})).filter(x=>!S.used.includes(x.key)&&x.key!==S.current.key);const same=pool.filter(x=>x.q[2]===S.current.data[2]);const choices=same.length?same:pool;if(!choices.length){alert("لا يوجد سؤال بديل متاح في هذه الفئة.");renderQuestion();return;}S.used.push(S.current.key);const next=choices[Math.floor(Math.random()*choices.length)];S.current={key:next.key,category:S.current.category,index:next.i,data:next.q};S.seconds=30;S.paused=false;stopTimer();renderQuestion();screen("question");runTimer();return}else if(k==="hint"){alert(S.current.data[3]||"فكّر في المجال أو المعلومة الأساسية المرتبطة بالسؤال.")}else if(k==="call"){alert("يمكنك استشارة صديق شفهيًا قبل الإجابة.")}renderQuestion()};
 $("reset").onclick=()=>{stopTimer();screen("home")};$("newGame").onclick=()=>{stopTimer();screen("home")};
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>screen(b.dataset.go));
