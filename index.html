@@ -158,6 +158,13 @@ button{border-radius:13px;letter-spacing:.1px}
 .team-turn.team-tone-1,.question-meta.team-tone-1{color:#d0b7ff;background:#b18aff16;border:1px solid #b18aff66}
 .question-meta{display:inline-block;align-self:center;padding:7px 14px;border-radius:999px;font-weight:800}
 
+.cat{background-image:linear-gradient(0deg,#061326e8 0%,#07162c22 100%)}
+.cat-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;opacity:1;display:block}
+.cat-copy{z-index:2}
+.category-col h3{overflow:hidden}
+.board-cat-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;opacity:1;display:block}
+.category-col h3:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#071326ed,#07132625);z-index:0;pointer-events:none}
+.category-col h3 span{z-index:2}
 </style></head>
 <body><div id="rotateNotice"><div class="rotate-icon">↻</div><h2>أدر هاتفك إلى الوضع الأفقي</h2><p>لأفضل تجربة لعب، تُعرض حزر فزر بالعرض مثل ألعاب المسابقات.</p></div><main class="app">
 <header class="top"><div class="brand">✦ حزر فزر</div><div class="tag">تحدّي المعرفة بين فريقين</div></header>
@@ -8141,7 +8148,7 @@ function resetMatch(){stopTimer();S.scores=[0,0];S.selected=[];S.picks=[[],[]];S
 function scoreMarkup(){return S.names.map(function(n,i){return '<div class="score team-tone-'+i+'"><span>'+esc(n)+'</span><strong>'+S.scores[i]+'</strong></div>'}).join("")}
 function renderCats(){
  const chosen=S.picks[S.pickTeam],other=S.picks[1-S.pickTeam];
- $("catGrid").innerHTML=CATS.map(function(c){return '<button class="cat '+(chosen.includes(c)?"selected":"") +' '+(other.includes(c)?"taken":"") +'" style="--cat-photo:url('+catPhoto(c)+')" data-cat="'+esc(c)+'" '+(other.includes(c)?"disabled":"") +'><span class="cat-copy"><b>'+esc(c)+'</b><small>50 سؤالًا في البنك · 6 مختارة للمباراة</small></span></button>'}).join("");
+ $("catGrid").innerHTML=CATS.map(function(c){return '<button class="cat '+(chosen.includes(c)?"selected":"") +' '+(other.includes(c)?"taken":"") +'" data-cat="'+esc(c)+'" '+(other.includes(c)?"disabled":"") +'><img class="cat-bg" src="'+catPhoto(c)+'" alt="" aria-hidden="true"><span class="cat-copy"><b>'+esc(c)+'</b><small>50 سؤالًا في البنك · 6 مختارة للمباراة</small></span></button>'}).join("");
  $("catCount").textContent=chosen.length+" / 3";
  $("pickPrompt").textContent="الفئات التي يختارها الآن: "+S.names[S.pickTeam];
  $("pickTeam1").className=S.pickTeam===0?"primary":"secondary";
@@ -8157,7 +8164,7 @@ $("makeBoard").onclick=function(){S.selected=S.picks[0].concat(S.picks[1]);rende
 function renderBoard(){
  $("boardScores").innerHTML=scoreMarkup();
  $("turnText").className="team-turn team-tone-"+S.turn;$("turnText").textContent="الدور الحالي: "+S.names[S.turn]+" — الأسئلة المتبقية: "+(36-S.used.length);
- $("boardGrid").innerHTML=S.selected.map(function(c){return '<div class="category-col" style="--cat-photo:url('+catPhoto(c)+')"><h3><span>'+esc(c)+'</span></h3>'+BANK[c].map(function(q,i){const key=c+"-"+i,used=S.used.includes(key);return '<button class="qbtn '+(used?"used":"") +'" data-q="'+esc(key)+'" '+(used?"disabled":"") +'>'+q[2]+'</button>'}).join("")+'</div>'}).join("");
+ $("boardGrid").innerHTML=S.selected.map(function(c){return '<div class="category-col"><h3><img class="board-cat-bg" src="'+catPhoto(c)+'" alt="" aria-hidden="true"><span>'+esc(c)+'</span></h3>'+BANK[c].map(function(q,i){const key=c+"-"+i,used=S.used.includes(key);return '<button class="qbtn '+(used?"used":"") +'" data-q="'+esc(key)+'" '+(used?"disabled":"") +'>'+q[2]+'</button>'}).join("")+'</div>'}).join("");
 }
 $("boardGrid").onclick=function(e){const b=e.target.closest("[data-q]");if(!b)return;const key=b.dataset.q;if(S.used.includes(key))return;const i=Number(key.slice(key.lastIndexOf("-")+1)),c=key.slice(0,key.lastIndexOf("-"));S.current={key:key,category:c,index:i,data:BANK[c][i]};S.seconds=30;S.double=false;S.paused=false;renderQuestion();screen("question");runTimer()};
 function runTimer(){stopTimer();if(S.seconds<=0){$("timer").textContent="00";return}S.timer=setInterval(function(){if(S.paused)return;S.seconds=Math.max(0,S.seconds-1);$("timer").textContent=String(S.seconds).padStart(2,"0");saveGame();if(S.seconds===0)stopTimer()},1000);$("timer").textContent=String(S.seconds).padStart(2,"0")}
