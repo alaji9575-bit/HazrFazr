@@ -212,7 +212,12 @@ function shuffleArray(items){
 }
 function shuffleQuestionBank(){
  Object.keys(ORIGINAL_BANK).forEach(function(category){
-  BANK[category]=shuffleArray(ORIGINAL_BANK[category]);
+  const original=ORIGINAL_BANK[category];
+  const pointValues=[200,400,600];
+  BANK[category]=pointValues.flatMap(function(points){
+   const sameValue=original.filter(function(question){return Number(question[2])===points});
+   return shuffleArray(sameValue);
+  });
  });
 }
 shuffleQuestionBank();
