@@ -159,12 +159,15 @@ button{border-radius:13px;letter-spacing:.1px}
 .question-meta{display:inline-block;align-self:center;padding:7px 14px;border-radius:999px;font-weight:800}
 
 .cat{background-image:linear-gradient(0deg,#061326e8 0%,#07162c22 100%)}
-.cat-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;opacity:1;display:block}
-.cat-copy{z-index:2}
-.category-col h3{overflow:hidden}
-.board-cat-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;opacity:1;display:block}
-.category-col h3:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#071326ed,#07132625);z-index:0;pointer-events:none}
-.category-col h3 span{z-index:2}
+.cat{position:relative;isolation:isolate;overflow:hidden;background-color:#10243d;background-image:none!important}
+.cat-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;opacity:1;display:block;pointer-events:none}
+.cat:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#061326ed 0%,#07162c25 100%);z-index:1;pointer-events:none}
+.cat-copy{position:relative;z-index:2;display:block;width:100%;padding-top:46px;color:#fff}
+.cat b,.cat small{color:#fff}
+.category-col h3{position:relative;isolation:isolate;overflow:hidden}
+.board-cat-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;opacity:1;display:block;pointer-events:none}
+.category-col h3:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#071326ed,#07132625);z-index:1;pointer-events:none}
+.category-col h3 span{position:relative;z-index:2}
 </style></head>
 <body><div id="rotateNotice"><div class="rotate-icon">↻</div><h2>أدر هاتفك إلى الوضع الأفقي</h2><p>لأفضل تجربة لعب، تُعرض حزر فزر بالعرض مثل ألعاب المسابقات.</p></div><main class="app">
 <header class="top"><div class="brand">✦ حزر فزر</div><div class="tag">تحدّي المعرفة بين فريقين</div></header>
