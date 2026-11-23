@@ -201,6 +201,21 @@ const BANK={
 "الألغاز والذكاء":[["شيء له أسنان ولا يعض، ما هو؟","المشط",200,"يستخدم لترتيب الشعر."],["ما العدد التالي: 2، 4، 6، 8؟","10",200,"تزيد الأعداد بمقدار اثنين."],["إذا كان اليوم الاثنين فما اليوم بعد ثلاثة أيام؟","الخميس",400,"الثلاثاء ثم الأربعاء ثم الخميس."],["شيء كلما أخذت منه كبر، ما هو؟","الحفرة",400,"يكبر بإزالة التراب."],["لدى أحمد ثلاثة إخوة ولكل أخ أخت واحدة، كم عدد الأبناء؟","خمسة",600,"أربعة أولاد وبنت واحدة."],["عدد إذا ضربته في نفسه ثم أضفت إليه نفسه كان الناتج 12؟","3",600,"3 × 3 + 3 = 12."]],
 "الاختراعات الحديثة":[["ما التقنية المستخدمة للدفع عند تقريب الهاتف من جهاز الدفع؟","NFC",200,"اتصال قريب المدى."],["ما التقنية التي تطبع مجسمات طبقة فوق طبقة؟","الطباعة ثلاثية الأبعاد",200,"تستخدم في الصناعة والطب."],["ما نوع البطاريات الشائع في الهواتف؟","ليثيوم أيون",400,"كثافة طاقتها مرتفعة."],["ما التقنية التي تصل الأجهزة لاسلكيًا لمسافات قصيرة؟","Bluetooth",400,"تستخدم للسماعات والملحقات."],["ما التقنية التي تعرض عناصر رقمية فوق الواقع؟","الواقع المعزز",600,"تضيف عناصر رقمية للمشهد."],["ما التقنية التي تحول ضوء الشمس إلى كهرباء؟","الخلايا الكهروضوئية",600,"تستخدم في الألواح الشمسية."]]
 };
+const ORIGINAL_BANK=JSON.parse(JSON.stringify(BANK));
+function shuffleArray(items){
+ const shuffled=items.slice();
+ for(let i=shuffled.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  const temp=shuffled[i];shuffled[i]=shuffled[j];shuffled[j]=temp;
+ }
+ return shuffled;
+}
+function shuffleQuestionBank(){
+ Object.keys(ORIGINAL_BANK).forEach(function(category){
+  BANK[category]=shuffleArray(ORIGINAL_BANK[category]);
+ });
+}
+shuffleQuestionBank();
 const CATS=Object.keys(BANK);
 const CAT_ICONS={"القرآن الكريم":"📖","الجغرافيا":"🌍","العلوم":"🔬","التاريخ الإسلامي":"🕌","كرة القدم":"⚽","اللغة العربية":"✍️","الأنبياء والرسل":"🌙","الصحابة":"⭐","العواصم والدول":"🏙️","الحيوانات":"🦁","الفضاء والفلك":"🪐","التكنولوجيا":"💻","جسم الإنسان":"🫀","الاختراعات والاكتشافات":"💡","معلومات عامة":"🧠","عالم البحار":"🌊","الألعاب الإلكترونية":"🎮","الأفلام السينمائية":"🎬","السيرة النبوية":"🕋","التاريخ":"🏛️","الشخصيات المشهورة":"👤","النباتات":"🌿","الكيمياء والفيزياء":"⚗️","البيئة والطبيعة":"🌳","الأندية والمنتخبات":"🏆","اللاعبون والمدربون":"🥇","المسلسلات التلفزيونية":"📺","الأنمي والرسوم المتحركة":"🎨","الممثلون والفنانون":"🎭","الهواتف والتطبيقات":"📱","الإنترنت":"🌐","الطعام والمطبخ":"🍲","العلامات التجارية":"🏷️","الألغاز والذكاء":"🧩","الاختراعات الحديثة":"🚀"};
 function catIcon(c){return CAT_ICONS[c]||'❖'}
@@ -224,7 +239,7 @@ function renderCats(){
  $("pickSummary").innerHTML=S.names.map(function(n,i){return '<div class="pick-team team-tone-'+i+'"><strong>'+esc(n)+' ('+S.picks[i].length+'/3)</strong>'+(S.picks[i].length?S.picks[i].map(esc).join(" • "):"لم يختر فئاته بعد")+'</div>'}).join("");
  $("makeBoard").disabled=S.picks[0].length!==3||S.picks[1].length!==3;
 }
-$("start").onclick=function(){S.names=[$("team1").value.trim()||"الفريق الأول",$("team2").value.trim()||"الفريق الثاني"];resetMatch();renderCats();screen("categories")};
+$("start").onclick=function(){shuffleQuestionBank();S.names=[$("team1").value.trim()||"الفريق الأول",$("team2").value.trim()||"الفريق الثاني"];resetMatch();renderCats();screen("categories")};
 $("pickTeam1").onclick=function(){S.pickTeam=0;renderCats()};
 $("pickTeam2").onclick=function(){S.pickTeam=1;renderCats()};
 $("catGrid").onclick=function(e){const b=e.target.closest("[data-cat]");if(!b)return;const c=b.dataset.cat,chosen=S.picks[S.pickTeam];if(S.picks[1-S.pickTeam].includes(c))return;if(chosen.includes(c))S.picks[S.pickTeam]=chosen.filter(function(x){return x!==c});else if(chosen.length<3)chosen.push(c);renderCats()};
