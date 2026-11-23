@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#171326"><title>حزر فزر</title>
+<meta name="theme-color" content="#171326"><meta name="description" content="حزر فزر: لعبة أسئلة عربية لفريقين على جهاز واحد، تعمل دون حسابات أو اتصال أثناء اللعب بعد تحميلها."><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><title>حزر فزر</title>
 <style>
 /* Landscape-first game layout */
 
@@ -61,12 +61,12 @@ h1,h2,h3,p{margin-top:0}h1{font-size:clamp(28px,5vw,46px);line-height:1.35;margi
 <section id="board" class="screen"><div class="panel"><h2>لوحة الأسئلة</h2><div class="scores" id="boardScores"></div><p class="muted" id="turnText"></p><div id="boardGrid" class="board"></div><div class="actions"><button class="secondary" id="reset">إنهاء والعودة للبداية</button></div></div></section>
 <section id="question" class="screen"><div class="scores" id="questionScores"></div><div class="question-layout"><div class="panel question-box"><div class="muted" id="qMeta"></div><div class="timer" id="timer">30</div><div class="question-text" id="qText"></div><div class="actions"><button class="secondary" id="pause">إيقاف المؤقت</button><button class="primary" id="showAnswer">إظهار الإجابة</button></div></div><aside class="panel"><h3 class="gold">وسائل المساعدة</h3><div class="lifelines" id="lifelines"></div></aside></div></section>
 <section id="answer" class="screen"><div class="panel" style="text-align:center"><div class="muted">الإجابة الصحيحة</div><div id="answerText" class="answer"></div><div class="actions"><button class="secondary" id="backQuestion">العودة للسؤال</button><button class="primary" id="chooseTeam">تحديد الفريق</button></div></div></section>
-<section id="award" class="screen"><div class="panel"><h2 style="text-align:center">من يستحق النقاط؟</h2><div class="team-grid"><button class="team" data-winner="0" id="award1"></button><button class="team" data-winner="1" id="award2"></button><button class="team" data-winner="-1">ولا أحد</button></div><div class="actions"><button class="secondary" id="backAnswer">العودة للإجابة</button></div></div></section>
+<section id="award" class="screen"><div class="panel"><h2 style="text-align:center">من يستحق النقاط؟</h2><p id="awardPoints" class="gold" style="text-align:center"></p><div class="team-grid"><button class="team" data-winner="0" id="award1"></button><button class="team" data-winner="1" id="award2"></button><button class="team" data-winner="-1">ولا أحد</button></div><div class="actions"><button class="secondary" id="backAnswer">العودة للإجابة</button></div></div></section>
 <section id="results" class="screen"><div class="panel" style="text-align:center"><div class="gold">انتهى التحدي</div><h1>النتيجة النهائية</h1><div id="finalScores" class="scores"></div><div id="winnerText" class="winner"></div><div class="actions"><button class="primary" id="newGame">تحدٍ جديد</button></div></div></section>
 </main>
 <script>
 const BANK={
-"القرآن الكريم":[["ما السورة التي تسمى قلب القرآن؟","سورة يس",200,"سورة من سور القرآن المكية."],["كم عدد سور القرآن الكريم؟","114 سورة",200,"عددها يزيد على مئة سورة."],["ما أطول سورة في القرآن؟","سورة البقرة",400,"تقع في الجزء الأول."],["ما السورة التي لا تبدأ بالبسملة؟","سورة التوبة",400,"تأتي بعد سورة الأنفال."],["في أي ليلة بدأ نزول القرآن؟","ليلة القدر",600,"ليلة من العشر الأواخر من رمضان."],["ما السورة التي وردت فيها البسملة مرتين؟","سورة النمل",600,"وردت في قصة سليمان وبلقيس."]],
+"القرآن الكريم":[["ما السورة التي تعدل ثلث القرآن؟","سورة الإخلاص",200,"سورة قصيرة في الجزء الثلاثين."],["كم عدد سور القرآن الكريم؟","114 سورة",200,"عددها يزيد على مئة سورة."],["ما أطول سورة في القرآن؟","سورة البقرة",400,"تقع في الجزء الأول."],["ما السورة التي لا تبدأ بالبسملة؟","سورة التوبة",400,"تأتي بعد سورة الأنفال."],["في أي ليلة بدأ نزول القرآن؟","ليلة القدر",600,"ليلة من العشر الأواخر من رمضان."],["ما السورة التي وردت فيها البسملة مرتين؟","سورة النمل",600,"وردت في قصة سليمان وبلقيس."]],
 "الجغرافيا":[["ما عاصمة اليابان؟","طوكيو",200,"مدينة آسيوية كبرى."],["ما أكبر قارة في العالم؟","آسيا",200,"تضم أكبر عدد من السكان."],["ما أكبر محيط على الأرض؟","المحيط الهادئ",400,"يقع بين آسيا وأستراليا والأمريكيتين."],["ما عاصمة أستراليا؟","كانبيرا",400,"ليست سيدني."],["ما الدولة المعروفة بأرض الألف بحيرة؟","فنلندا",600,"دولة في شمال أوروبا."],["ما المضيق الذي يفصل المغرب عن إسبانيا؟","مضيق جبل طارق",600,"يربط الأطلسي بالمتوسط."]],
 "العلوم":[["ما الغاز الذي تمتصه النباتات؟","ثاني أكسيد الكربون",200,"تستخدمه في البناء الضوئي."],["ما الكوكب المعروف بالكوكب الأحمر؟","المريخ",200,"لونه مرتبط بأكاسيد الحديد."],["ما وحدة قياس شدة التيار الكهربائي؟","الأمبير",400,"سميت باسم عالم فرنسي."],["ما العنصر الذي رمزه O؟","الأكسجين",400,"ضروري للتنفس."],["ما الجزء المسؤول عن إنتاج الطاقة في الخلية؟","الميتوكوندريا",600,"تسمى أحيانًا محطة الطاقة."],["ما تحول المادة الصلبة إلى غاز مباشرة؟","التسامي",600,"يتجاوز الحالة السائلة."]],
 "التاريخ الإسلامي":[["في أي عام كانت الهجرة النبوية؟","622 ميلادية",200,"بداية التقويم الهجري."],["ما أول معركة كبرى في الإسلام؟","غزوة بدر",200,"وقعت في السنة الثانية للهجرة."],["من أول الخلفاء الراشدين؟","أبو بكر الصديق",400,"صاحب النبي في الهجرة."],["ما عاصمة الدولة الأموية؟","دمشق",400,"مدينة في بلاد الشام."],["من القائد الذي فتح القسطنطينية؟","محمد الفاتح",600,"سلطان عثماني."],["في أي عام وقعت معركة حطين؟","1187 ميلادية",600,"ارتبطت بصلاح الدين الأيوبي."]],
@@ -130,7 +130,7 @@ $("catGrid").onclick=function(e){const b=e.target.closest("[data-cat]");if(!b)re
 $("makeBoard").onclick=function(){S.selected=S.picks[0].concat(S.picks[1]);renderBoard();screen("board")};
 function renderBoard(){
  $("boardScores").innerHTML=scoreMarkup();
- $("turnText").textContent="الدور الحالي: "+S.names[S.turn]+" — اختاروا سؤالًا من اللوحة";
+ $("turnText").textContent="الدور الحالي: "+S.names[S.turn]+" — الأسئلة المتبقية: "+(36-S.used.length);
  $("boardGrid").innerHTML=S.selected.map(function(c){return '<div class="category-col"><h3>'+catIcon(c)+' '+esc(c)+'</h3>'+BANK[c].map(function(q,i){const key=c+"-"+i,used=S.used.includes(key);return '<button class="qbtn '+(used?"used":"")+'" data-q="'+esc(key)+'" '+(used?"disabled":"")+'>'+q[2]+'</button>'}).join("")+'</div>'}).join("");
 }
 $("boardGrid").onclick=function(e){const b=e.target.closest("[data-q]");if(!b)return;const key=b.dataset.q;if(S.used.includes(key))return;const i=Number(key.slice(key.lastIndexOf("-")+1)),c=key.slice(0,key.lastIndexOf("-"));S.current={key:key,category:c,index:i,data:BANK[c][i]};S.seconds=30;S.double=false;S.paused=false;renderQuestion();screen("question");runTimer()};
@@ -145,7 +145,7 @@ function renderQuestion(){
 $("pause").onclick=function(){if(S.seconds<=0)return;S.paused=!S.paused;if(!S.paused&&!S.timer)runTimer();$("pause").textContent=S.paused?"استئناف المؤقت":"إيقاف المؤقت"};
 $("showAnswer").onclick=function(){if(!S.current)return;stopTimer();S.paused=false;$("answerText").textContent=S.current.data[1];screen("answer")};
 $("backQuestion").onclick=function(){screen("question");S.paused=false;renderQuestion();if(S.seconds>0)runTimer()};
-$("chooseTeam").onclick=function(){stopTimer();$("award1").textContent=S.names[0];$("award2").textContent=S.names[1];screen("award")};
+$("chooseTeam").onclick=function(){stopTimer();$("award1").textContent=S.names[0];$("award2").textContent=S.names[1];$("awardPoints").textContent="قيمة السؤال: "+S.current.data[2]*(S.double?2:1)+" نقطة";screen("award")};
 $("backAnswer").onclick=function(){screen("answer")};
 function finishIfDone(){if(S.used.length<36)return false;$("finalScores").innerHTML=scoreMarkup();$("winnerText").textContent=S.scores[0]===S.scores[1]?"تعادل رائع!":"الفائز: "+S.names[S.scores[0]>S.scores[1]?0:1];screen("results");return true}
 $("award").onclick=function(e){
@@ -179,4 +179,5 @@ $("lifelines").onclick=function(e){
 $("reset").onclick=function(){if(confirm("هل تريد إنهاء المباراة والعودة إلى البداية؟")){resetMatch();screen("home")}};
 $("newGame").onclick=function(){resetMatch();screen("home")};
 document.querySelectorAll("[data-go]").forEach(function(b){b.onclick=function(){screen(b.dataset.go)}});
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").catch(function(err){console.log("تعذر تفعيل وضع عدم الاتصال",err)})})}
 </script></body></html>
