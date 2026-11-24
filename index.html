@@ -168,6 +168,19 @@ button{border-radius:13px;letter-spacing:.1px}
 .board-cat-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;opacity:1;display:block;pointer-events:none}
 .category-col h3:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#071326ed,#07132625);z-index:1;pointer-events:none}
 .category-col h3 span{position:relative;z-index:2}
+
+/* In-game help dialog */
+.game-notice-backdrop{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:20px;background:#020916c9;backdrop-filter:blur(9px)}
+.game-notice-backdrop.show{display:flex;animation:noticeFade .18s ease-out}
+.game-notice{width:min(440px,100%);position:relative;overflow:hidden;text-align:center;padding:28px 24px 22px;border:1px solid #53d9d377;border-radius:24px;background:radial-gradient(ellipse at 50% 0%,#24516b88,transparent 62%),linear-gradient(145deg,#183451,#0b1a30 78%);box-shadow:0 24px 80px #000b,inset 0 1px #ffffff18;animation:noticePop .22s ease-out}
+.game-notice:before{content:"";position:absolute;top:0;left:12%;right:12%;height:3px;border-radius:0 0 8px 8px;background:linear-gradient(90deg,#53d9d3,#ffbd66)}
+.game-notice-icon{width:58px;height:58px;display:grid;place-items:center;margin:0 auto 14px;border-radius:18px;border:1px solid #53d9d366;background:#53d9d31c;color:#8af2e8;font-size:27px;box-shadow:0 8px 26px #53d9d322}
+.game-notice h3{margin:0 0 10px;color:#ffcf88;font-size:21px}
+.game-notice p{margin:0 auto 22px;max-width:340px;color:#e3edf9;font-size:16px;line-height:1.9;white-space:pre-line}
+.game-notice button{min-width:130px;padding:11px 24px;background:linear-gradient(120deg,#5ce0d2,#8be5c5);color:#082033;box-shadow:0 8px 22px #53d9d333}
+@keyframes noticeFade{from{opacity:0}to{opacity:1}}
+@keyframes noticePop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:520px){.game-notice-backdrop{padding:16px}.game-notice{padding:25px 19px 19px;border-radius:21px}.game-notice p{font-size:15px}}
 </style></head>
 <body><div id="rotateNotice"><div class="rotate-icon">↻</div><h2>أدر هاتفك إلى الوضع الأفقي</h2><p>لأفضل تجربة لعب، تُعرض حزر فزر بالعرض مثل ألعاب المسابقات.</p></div><main class="app">
 <header class="top"><div class="brand">✦ حزر فزر</div><div class="tag">تحدّي المعرفة بين فريقين</div></header>
@@ -180,6 +193,9 @@ button{border-radius:13px;letter-spacing:.1px}
 <section id="award" class="screen"><div class="panel"><h2 style="text-align:center">من يستحق النقاط؟</h2><p id="awardPoints" class="gold" style="text-align:center"></p><div class="team-grid"><button class="team" data-winner="0" id="award1"></button><button class="team" data-winner="1" id="award2"></button><button class="team" data-winner="-1">ولا أحد</button></div><div class="actions"><button class="secondary" id="backAnswer">العودة للإجابة</button></div></div></section>
 <section id="results" class="screen"><div class="panel" style="text-align:center"><div class="gold">انتهى التحدي</div><h1>النتيجة النهائية</h1><div id="finalScores" class="scores"></div><div id="winnerText" class="winner"></div><div class="actions"><button class="primary" id="newGame">تحدٍ جديد</button></div></div></section>
 </main>
+<div id="gameNotice" class="game-notice-backdrop" role="dialog" aria-modal="true" aria-labelledby="gameNoticeTitle" aria-describedby="gameNoticeText">
+ <div class="game-notice"><div class="game-notice-icon" id="gameNoticeIcon">✦</div><h3 id="gameNoticeTitle">وسيلة مساعدة</h3><p id="gameNoticeText"></p><button type="button" id="gameNoticeClose">حسنًا</button></div>
+</div>
 <script>
 const BANK={
 "القرآن الكريم":[["ما السورة التي تعدل ثلث القرآن؟","سورة الإخلاص",200,"سورة قصيرة في الجزء الثلاثين."],["كم عدد سور القرآن الكريم؟","114 سورة",200,"عددها يزيد على مئة سورة."],["ما أطول سورة في القرآن؟","سورة البقرة",400,"تقع في الجزء الأول."],["ما السورة التي لا تبدأ بالبسملة؟","سورة التوبة",400,"تأتي بعد سورة الأنفال."],["في أي ليلة بدأ نزول القرآن؟","ليلة القدر",600,"ليلة من العشر الأواخر من رمضان."],["ما السورة التي وردت فيها البسملة مرتين؟","سورة النمل",600,"وردت في قصة سليمان وبلقيس."]],
@@ -8145,6 +8161,18 @@ let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0
 function saveBank(){try{localStorage.setItem("hazrfazr-bank-v1",JSON.stringify(BANK))}catch(error){console.warn("تعذر حفظ بنك الأسئلة",error)}}
 function saveGame(){try{localStorage.removeItem("hazrfazr-save-v1")}catch(error){console.warn("تعذر حذف الحفظ السابق",error)}}
 
+function showGameNotice(message,title,icon){
+ const layer=$("gameNotice");
+ $("gameNoticeTitle").textContent=title||"وسيلة مساعدة";
+ $("gameNoticeText").textContent=message||"";
+ $("gameNoticeIcon").textContent=icon||"✦";
+ layer.classList.add("show");
+ $("gameNoticeClose").focus();
+}
+function closeGameNotice(){$("gameNotice").classList.remove("show")}
+$("gameNoticeClose").onclick=closeGameNotice;
+$("gameNotice").onclick=function(e){if(e.target===$("gameNotice"))closeGameNotice()};
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeGameNotice()});
 function stopTimer(){clearInterval(S.timer);S.timer=null}
 function screen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id));saveGame()}
 function esc(v){return String(v).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -8252,7 +8280,7 @@ $("lifelines").onclick=function(e){
   const pool=BANK[S.current.category].map(function(q,i){return {q:q,i:i,key:S.current.category+"-"+i}}).filter(function(x){return !S.used.includes(x.key)&&x.key!==S.current.key});
   const same=pool.filter(function(x){return x.q[2]===S.current.data[2]});
   const choices=same.length?same:pool;
-  if(!choices.length){alert("لا يوجد سؤال بديل متاح في هذه الفئة.");return}
+  if(!choices.length){showGameNotice("لا يوجد سؤال بديل متاح في هذه الفئة.","تغيير السؤال","↻");return}
   S.lives[S.turn][k]=true;
   const next=choices[Math.floor(Math.random()*choices.length)];
   S.current={key:S.current.key,category:S.current.category,index:S.current.index,data:next.q};
@@ -8260,9 +8288,9 @@ $("lifelines").onclick=function(e){
  }
  S.lives[S.turn][k]=true;
  if(k==="time"){S.seconds+=15;$("timer").textContent=String(S.seconds).padStart(2,"0");if(!S.timer&&!S.paused)runTimer()}
- if(k==="double"){S.double=true;alert("إذا أجاب الفريق إجابة صحيحة فستُضاعف نقاط السؤال.")}
- if(k==="hint"){alert(S.current.data[3]||"فكّر في المعلومة الأساسية المرتبطة بالسؤال.")}
- if(k==="call"){alert("يمكنكم الآن استشارة صديق شفهيًا قبل اعتماد الإجابة.")}
+ if(k==="double"){S.double=true;showGameNotice("إذا أجاب الفريق إجابة صحيحة فستُضاعف نقاط السؤال.","مضاعفة النقاط","×2")}
+ if(k==="hint"){showGameNotice(S.current.data[3]||"فكّر في المعلومة الأساسية المرتبطة بالسؤال.","تلميح السؤال","✦")}
+ if(k==="call"){showGameNotice("يمكنكم الآن استشارة صديق شفهيًا قبل اعتماد الإجابة.","اتصال بصديق","☎")}
  renderQuestion();saveGame();
 };
 $("reset").onclick=function(){if(confirm("هل تريد إنهاء المباراة والعودة إلى البداية؟")){resetMatch();screen("home")}};
