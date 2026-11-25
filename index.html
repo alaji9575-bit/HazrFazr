@@ -8214,7 +8214,7 @@ shuffleQuestionBank();
 try{
  const savedBank=localStorage.getItem("hazrfazr-bank-v1");
  if(savedBank){const parsed=JSON.parse(savedBank);Object.keys(BANK).forEach(function(k){delete BANK[k]});Object.assign(BANK,parsed)}
- localStorage.removeItem("hazrfazr-save-v1"); localStorage.removeItem("hazrfazr-progress"); sessionStorage.clear();
+ localStorage.removeItem("hazrfazr-progress");
 }catch(error){console.warn("تعذر استعادة بيانات المباراة",error)}
 const CATS=Object.keys(BANK);
 const CAT_ICONS={"القرآن الكريم":"📖","الجغرافيا":"🌍","العلوم":"🔬","التاريخ الإسلامي":"🕌","كرة القدم":"⚽","اللغة العربية":"✍️","الأنبياء والرسل":"🌙","الصحابة":"⭐","العواصم والدول":"🏙️","الحيوانات":"🦁","الفضاء والفلك":"🪐","التكنولوجيا":"💻","جسم الإنسان":"🫀","الاختراعات والاكتشافات":"💡","معلومات عامة":"🧠","عالم البحار":"🌊","الألعاب الإلكترونية":"🎮","الأفلام السينمائية":"🎬","السيرة النبوية":"🕋","التاريخ":"🏛️","الشخصيات المشهورة":"👤","النباتات":"🌿","الكيمياء والفيزياء":"⚗️","البيئة والطبيعة":"🌳","الأندية والمنتخبات":"🏆","اللاعبون والمدربون":"🥇","المسلسلات التلفزيونية":"📺","الأنمي والرسوم المتحركة":"🎨","الممثلون والفنانون":"🎭","الهواتف والتطبيقات":"📱","الإنترنت":"🌐","الطعام والمطبخ":"🍲","العلامات التجارية":"🏷️","الألغاز والذكاء":"🧩","الاختراعات الحديثة":"🚀"};
@@ -8225,6 +8225,8 @@ const CATEGORY_PHOTOS=["category-01.jpg","category-02.jpg","category-03.jpg","ca
 const LIFES=[["call","اتصال بصديق"],["hint","تلميح"],["time","وقت إضافي"],["change","تغيير السؤال"],["double","مضاعفة النقاط"]];
 const $=id=>document.getElementById(id);
 let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0],selected:[],picks:[[],[]],pickTeam:0,used:[],turn:0,current:null,seconds:30,timerDuration:30,timer:null,paused:false,lives:[{},{}],double:false};
+let activeScreen="home";
+const MATCH_SAVE_KEY="hazrfazr-match-v1";
 
 let soundEnabled=true,audioContext=null,lastTimerBeep=99;
 const DEFAULT_SETTINGS={volume:70,questionTime:30,extraTime:true,countdown:true,light:false,motion:true};
@@ -8287,7 +8289,17 @@ $("resetSettings").onclick=function(){gameSettings={...DEFAULT_SETTINGS};soundEn
 applyAppearance();
 
 function saveBank(){try{localStorage.setItem("hazrfazr-bank-v1",JSON.stringify(BANK))}catch(error){console.warn("تعذر حفظ بنك الأسئلة",error)}}
-function saveGame(){try{localStorage.removeItem("hazrfazr-save-v1")}catch(error){console.warn("تعذر حذف الحفظ السابق",error)}}
+function saveGame(){
+ try{
+  if(activeScreen==="home"){localStorage.removeItem(MATCH_SAVE_KEY);return}
+  const snapshot={version:1,screen:activeScreen,state:{
+   names:S.names,scores:S.scores,selected:S.selected,picks:S.picks,pickTeam:S.pickTeam,
+   used:S.used,turn:S.turn,current:S.current,seconds:S.seconds,timerDuration:S.timerDuration,
+   paused:S.paused,lives:S.lives,double:S.double
+  },savedAt:Date.now()};
+  localStorage.setItem(MATCH_SAVE_KEY,JSON.stringify(snapshot));
+ }catch(error){console.warn("تعذر حفظ تقدم المباراة",error)}
+}
 
 function showGameNotice(message,title,icon){
  const layer=$("gameNotice");
@@ -8317,7 +8329,7 @@ function updateTimerVisual(){
 }
 
 function stopTimer(){clearInterval(S.timer);S.timer=null}
-function screen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id));saveGame()}
+function screen(id){activeScreen=id;document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id));saveGame()}
 function esc(v){return String(v).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function resetMatch(){stopTimer();S.scores=[0,0];S.selected=[];S.picks=[[],[]];S.pickTeam=0;S.used=[];S.turn=0;S.current=null;S.seconds=30;S.paused=false;S.lives=[{},{}];S.double=false;saveGame()}
 function scoreMarkup(){
@@ -8404,7 +8416,7 @@ function questionPhoto(question,category){
  function renderQuestion(){
  $("questionScores").innerHTML=scoreMarkup();
  const questionBox=document.querySelector(".question-box");questionBox.classList.remove("question-enter");void questionBox.offsetWidth;questionBox.classList.add("question-enter");
- $("timerWrap").classList.remove("timer-warn","timer-critical","timer-finished");S.timerDuration=30;lastTimerBeep=99;updateTimerVisual();
+ $("timerWrap").classList.remove("timer-warn","timer-critical","timer-finished");S.timerDuration=S.timerDuration||gameSettings.questionTime;lastTimerBeep=99;updateTimerVisual();
  $("qMeta").className="question-meta team-tone-"+S.turn;$("qMeta").textContent=S.current.category+" • "+S.current.data[2]+" نقطة • دور "+S.names[S.turn];
  $("qText").textContent=S.current.data[0];
  const qi=$("qImage");qi.src=questionPhoto(S.current.data[0],S.current.category);qi.alt="صورة توضيحية: "+S.current.data[0];qi.onerror=function(){this.onerror=null;this.src=catPhoto(S.current.category)};
@@ -8448,14 +8460,44 @@ $("lifelines").onclick=function(e){
 $("reset").onclick=function(){if(confirm("هل تريد إنهاء المباراة والعودة إلى البداية؟")){resetMatch();screen("home")}};
 $("newGame").onclick=function(){resetMatch();screen("home")};
 document.querySelectorAll("[data-go]").forEach(function(b){b.onclick=function(){screen(b.dataset.go)}});
-function startFresh(){
+function restoreGame(){
  stopTimer();
- S.names=["الفريق الأول","الفريق الثاني"];S.scores=[0,0];S.selected=[];S.picks=[[],[]];S.pickTeam=0;S.used=[];S.turn=0;S.current=null;S.seconds=30;S.paused=false;S.lives=[{},{}];S.double=false;
- $("team1").value=S.names[0];$("team2").value=S.names[1];
- document.querySelectorAll(".screen").forEach(function(x){x.classList.toggle("active",x.id==="home")});
- try{localStorage.removeItem("hazrfazr-save-v1");sessionStorage.clear()}catch(e){}
+ let saved=null;
+ try{saved=JSON.parse(localStorage.getItem(MATCH_SAVE_KEY)||"null")}catch(error){console.warn("تعذر قراءة الحفظ السابق",error)}
+ if(!saved||saved.version!==1||!saved.state){activeScreen="home";document.querySelectorAll(".screen").forEach(function(x){x.classList.toggle("active",x.id==="home")});$("team1").value=S.names[0];$("team2").value=S.names[1];return}
+ const data=saved.state;
+ const validScreens=["categories","board","question","answer","award","results"];
+ if(!validScreens.includes(saved.screen)){localStorage.removeItem(MATCH_SAVE_KEY);activeScreen="home";document.querySelectorAll(".screen").forEach(function(x){x.classList.toggle("active",x.id==="home")});return}
+ try{
+  S.names=Array.isArray(data.names)&&data.names.length===2?data.names:["الفريق الأول","الفريق الثاني"];
+  S.scores=Array.isArray(data.scores)&&data.scores.length===2?data.scores:[0,0];
+  S.selected=Array.isArray(data.selected)?data.selected:[];
+  S.picks=Array.isArray(data.picks)&&data.picks.length===2?data.picks:[[],[]];
+  S.pickTeam=data.pickTeam===1?1:0;S.used=Array.isArray(data.used)?data.used:[];
+  S.turn=data.turn===1?1:0;S.current=data.current&&Array.isArray(data.current.data)?data.current:null;
+  S.seconds=Number.isFinite(data.seconds)?Math.max(0,data.seconds):30;
+  S.timerDuration=Number.isFinite(data.timerDuration)?Math.max(1,data.timerDuration):gameSettings.questionTime;
+  S.paused=!!data.paused;S.lives=Array.isArray(data.lives)&&data.lives.length===2?data.lives:[{},{}];
+  S.double=!!data.double;
+  if((saved.screen==="question"||saved.screen==="answer"||saved.screen==="award")&&!S.current)throw new Error("بيانات السؤال غير مكتملة");
+  activeScreen=saved.screen;
+  $("team1").value=S.names[0];$("team2").value=S.names[1];
+  document.querySelectorAll(".screen").forEach(function(x){x.classList.toggle("active",x.id===activeScreen)});
+  if(activeScreen==="categories")renderCats();
+  if(activeScreen==="board")renderBoard();
+  if(activeScreen==="question"){S.paused=true;renderQuestion();$("pause").textContent="استئناف المؤقت";saveGame()}
+  if(activeScreen==="answer"){$("answerText").textContent=S.current.data[1]}
+  if(activeScreen==="award"){$("award1").textContent=S.names[0];$("award2").textContent=S.names[1];$("awardPoints").textContent="قيمة السؤال: "+S.current.data[2]*(S.double?2:1)+" نقطة"}
+  if(activeScreen==="results"){$("finalScores").innerHTML=scoreMarkup();$("winnerText").textContent=S.scores[0]===S.scores[1]?"تعادل رائع!":"الفائز: "+S.names[S.scores[0]>S.scores[1]?0:1]}
+ }catch(error){
+  console.warn("تعذر استعادة المباراة",error);
+  stopTimer();activeScreen="home";localStorage.removeItem(MATCH_SAVE_KEY);
+  document.querySelectorAll(".screen").forEach(function(x){x.classList.toggle("active",x.id==="home")});
+  S.names=["الفريق الأول","الفريق الثاني"];S.scores=[0,0];S.selected=[];S.picks=[[],[]];S.pickTeam=0;S.used=[];S.turn=0;S.current=null;S.seconds=30;S.paused=false;S.lives=[{},{}];S.double=false;
+  $("team1").value=S.names[0];$("team2").value=S.names[1];
+ }
 }
-window.addEventListener("pageshow",startFresh);
-startFresh();
+window.addEventListener("pageshow",restoreGame);
+restoreGame();
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").catch(function(err){console.log("تعذر تفعيل وضع عدم الاتصال",err)})})}
 </script></body></html>
