@@ -182,6 +182,13 @@ button{border-radius:13px;letter-spacing:.1px}
 @keyframes noticePop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:520px){.game-notice-backdrop{padding:16px}.game-notice{padding:25px 19px 19px;border-radius:21px}.game-notice p{font-size:15px}}
 
+/* Subtle victory celebration */
+.win-celebration{position:fixed;inset:0;z-index:12000;pointer-events:none;overflow:hidden}
+.win-celebration i{position:absolute;top:-18px;width:8px;height:13px;border-radius:3px;opacity:0;animation:winConfetti var(--duration) var(--delay) ease-in forwards}
+@keyframes winConfetti{0%{opacity:0;transform:translate3d(0,-10px,0) rotate(0)}12%{opacity:.95}100%{opacity:0;transform:translate3d(var(--drift),105vh,0) rotate(620deg)}}
+@media(prefers-reduced-motion:reduce){.win-celebration{display:none}}
+body.no-effects .win-celebration{display:none}
+
 /* Game sound and feedback effects */
 .top{gap:12px;flex-wrap:wrap}
 .top-tools{display:flex;align-items:center;gap:9px}
@@ -8284,7 +8291,7 @@ function playGameSound(kind){
   if(!audioContext)audioContext=new AudioCtx();
   if(audioContext.state==="suspended")audioContext.resume();
   const now=audioContext.currentTime;
-  const patterns={question:[[523,.10,0],[659,.12,.10]],tick:[[880,.07,0]],score:[[523,.12,0],[659,.12,.13],[784,.2,.27]],neutral:[[392,.12,0],[330,.16,.14]],hint:[[659,.1,0],[784,.14,.11]],time:[[740,.1,0],[880,.12,.12]]};
+  const patterns={question:[[523,.10,0],[659,.12,.10]],tick:[[880,.07,0]],score:[[523,.12,0],[659,.12,.13],[784,.2,.27]],win:[[523,.13,0],[659,.13,.12],[784,.16,.24],[1047,.28,.39]],neutral:[[392,.12,0],[330,.16,.14]],hint:[[659,.1,0],[784,.14,.11]],time:[[740,.1,0],[880,.12,.12]]};
   (patterns[kind]||patterns.hint).forEach(function(p){
    const osc=audioContext.createOscillator(),gain=audioContext.createGain();
    osc.type="sine";osc.frequency.setValueAtTime(p[0],now+p[2]);
@@ -8474,7 +8481,18 @@ function renderResults(){
  const helps=S.lives.reduce(function(total,team){return total+Object.keys(team||{}).length},0);
  $("resultStats").innerHTML='<div class="result-stat"><strong>'+S.used.length+'</strong><span>سؤالًا تم لعبه</span></div><div class="result-stat"><strong>'+(S.scores[0]+S.scores[1])+'</strong><span>إجمالي النقاط</span></div><div class="result-stat"><strong>'+helps+'</strong><span>وسيلة مساعدة مستخدمة</span></div>';
 }
-function finishIfDone(){if(S.used.length<36)return false;renderResults();screen("results");playGameSound("score");return true}
+function celebrateResults(){
+ if(!gameSettings.motion||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+ const layer=document.createElement("div");layer.className="win-celebration";layer.setAttribute("aria-hidden","true");
+ const colors=["#55d9cf","#f4c16f","#f7eee0","#8fa9ff"];
+ for(let i=0;i<26;i++){
+  const bit=document.createElement("i");bit.style.left=(4+Math.random()*92)+"%";bit.style.setProperty("--drift",(Math.random()*130-65)+"px");
+  bit.style.setProperty("--delay",(Math.random()*.65)+"s");bit.style.setProperty("--duration",(1.8+Math.random()*.9)+"s");
+  bit.style.background=colors[i%colors.length];bit.style.transform="rotate("+(Math.random()*180)+"deg)";layer.appendChild(bit);
+ }
+ document.body.appendChild(layer);setTimeout(function(){layer.remove()},3200);
+}
+function finishIfDone(){if(S.used.length<36)return false;renderResults();screen("results");playGameSound("win");celebrateResults();return true}
 $("award").onclick=function(e){
  const b=e.target.closest("[data-winner]");if(!b||!S.current)return;
  const w=Number(b.dataset.winner),pts=S.current.data[2]*(S.double?2:1);
