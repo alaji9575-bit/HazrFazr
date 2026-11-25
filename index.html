@@ -227,6 +227,22 @@ button{border-radius:13px;letter-spacing:.1px}
 .scoreboard-summary{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 auto 10px;color:#b8c8dc;font-size:12px}
 .scoreboard-summary strong{color:#f4d18a}
 @media(max-width:520px){.scores.scoreboard{gap:8px}.scoreboard .score{padding:11px 10px}.scoreboard .score .score-name{font-size:12px}.scoreboard .score .score-status{font-size:9px;padding:3px 6px}}
+
+/* Smooth transitions between game screens */
+.screen.active{animation:screenEnter .32s cubic-bezier(.2,.75,.25,1) both;transform-origin:50% 12%}
+@keyframes screenEnter{
+ from{opacity:0;transform:translateY(12px) scale(.994);filter:blur(2px)}
+ to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+.screen.active>.panel{animation:panelSettle .38s cubic-bezier(.2,.75,.25,1) both}
+@keyframes panelSettle{from{box-shadow:0 8px 24px #0001}to{box-shadow:0 16px 45px #0003}}
+.screen.active .actions button{animation:controlEnter .3s ease-out both}
+.screen.active .actions button:nth-child(2){animation-delay:.045s}
+.screen.active .actions button:nth-child(3){animation-delay:.09s}
+@keyframes controlEnter{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+ .screen.active,.screen.active>.panel,.screen.active .actions button{animation:none!important;filter:none!important;transform:none!important}
+}
 </style></head>
 <body><div id="rotateNotice"><div class="rotate-icon">↻</div><h2>أدر هاتفك إلى الوضع الأفقي</h2><p>لأفضل تجربة لعب، تُعرض حزر فزر بالعرض مثل ألعاب المسابقات.</p></div><main class="app">
 <header class="top"><div class="brand">✦ حزر فزر</div><div class="top-tools"><div class="tag">تحدّي المعرفة بين فريقين</div><button type="button" class="sound-toggle" id="soundToggle" aria-pressed="true"><span class="sound-icon" id="soundIcon">♫</span><span id="soundLabel">الصوت: تشغيل</span></button></div></header>
