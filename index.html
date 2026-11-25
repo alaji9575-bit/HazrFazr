@@ -8344,6 +8344,8 @@ const CATEGORY_PHOTOS=["category-01.jpg","category-02.jpg","category-03.jpg","ca
  const CAT_PHOTOS=Object.fromEntries(CATS.map((c,i)=>[c,CATEGORY_ARTWORK[i-2]||"general.svg"]));
  CAT_PHOTOS["البحرين"]="category-bahrain.svg";
  CAT_PHOTOS["حروف"]="category-letters.svg";
+ CAT_PHOTOS["البحرين"]="category-bahrain.svg";
+ CAT_PHOTOS["حروف"]="category-letters.svg";
  function catPhoto(c){const file=CAT_PHOTOS[c]||CATEGORY_PHOTOS[14];return "./assets/"+file}
 const LIFES=[["call","اتصال بصديق"],["hint","تلميح"],["time","وقت إضافي"],["change","تغيير السؤال"],["double","مضاعفة النقاط"]];
 const $=id=>document.getElementById(id);
