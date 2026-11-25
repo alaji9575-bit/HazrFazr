@@ -208,6 +208,25 @@ button{border-radius:13px;letter-spacing:.1px}
 .timer-wrap.timer-finished{--timer-color:#ff766f}
 @keyframes ringPulse{from{transform:scale(1)}to{transform:scale(1.055)}}
 @media(max-width:700px){.timer-wrap{width:98px;height:98px}.timer-wrap .timer{font-size:31px}}
+
+/* Enhanced live scoreboard */
+.scores.scoreboard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;margin:14px 0}
+.scoreboard .score{position:relative;overflow:hidden;min-width:0;padding:14px 16px 13px;border-radius:17px;background:linear-gradient(145deg,#1b3650,#102239);border:1px solid #ffffff20;box-shadow:0 8px 22px #0002;transition:border-color .25s,transform .25s}
+.scoreboard .score:before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--score-accent,#61d7cb)}
+.scoreboard .score.team-tone-1:before{background:#e5ae65}
+.scoreboard .score .score-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:25px}
+.scoreboard .score .score-name{font-size:14px;font-weight:800;color:#eaf3ff;overflow-wrap:anywhere}
+.scoreboard .score .score-status{font-size:10px;font-weight:900;padding:4px 8px;border-radius:20px;background:#ffffff12;color:#b9c9dc;white-space:nowrap}
+.scoreboard .score.leading{border-color:#65dfc688;box-shadow:0 0 0 1px #65dfc622,0 10px 28px #0003}
+.scoreboard .score.leading .score-status{background:#5ce0bd20;color:#78e9c9}
+.scoreboard .score .score-value{display:block;font-size:clamp(25px,4vw,34px);line-height:1.25;margin:7px 0 9px;color:#fff;font-weight:950;font-variant-numeric:tabular-nums}
+.scoreboard .score .score-track{height:6px;border-radius:20px;background:#ffffff15;overflow:hidden}
+.scoreboard .score .score-fill{height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,#4dcbbb,#8be6c7);transition:width .55s cubic-bezier(.2,.8,.2,1)}
+.scoreboard .score.team-tone-1 .score-fill{background:linear-gradient(90deg,#d59a4d,#f4d18a)}
+.scoreboard .score.score-pulse{animation:scorePulse .65s ease-out}
+.scoreboard-summary{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 auto 10px;color:#b8c8dc;font-size:12px}
+.scoreboard-summary strong{color:#f4d18a}
+@media(max-width:520px){.scores.scoreboard{gap:8px}.scoreboard .score{padding:11px 10px}.scoreboard .score .score-name{font-size:12px}.scoreboard .score .score-status{font-size:9px;padding:3px 6px}}
 </style></head>
 <body><div id="rotateNotice"><div class="rotate-icon">↻</div><h2>أدر هاتفك إلى الوضع الأفقي</h2><p>لأفضل تجربة لعب، تُعرض حزر فزر بالعرض مثل ألعاب المسابقات.</p></div><main class="app">
 <header class="top"><div class="brand">✦ حزر فزر</div><div class="top-tools"><div class="tag">تحدّي المعرفة بين فريقين</div><button type="button" class="sound-toggle" id="soundToggle" aria-pressed="true"><span class="sound-icon" id="soundIcon">♫</span><span id="soundLabel">الصوت: تشغيل</span></button></div></header>
@@ -8255,7 +8274,14 @@ function stopTimer(){clearInterval(S.timer);S.timer=null}
 function screen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id));saveGame()}
 function esc(v){return String(v).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function resetMatch(){stopTimer();S.scores=[0,0];S.selected=[];S.picks=[[],[]];S.pickTeam=0;S.used=[];S.turn=0;S.current=null;S.seconds=30;S.paused=false;S.lives=[{},{}];S.double=false;saveGame()}
-function scoreMarkup(){return S.names.map(function(n,i){return '<div class="score team-tone-'+i+'"><span>'+esc(n)+'</span><strong>'+S.scores[i]+'</strong></div>'}).join("")}
+function scoreMarkup(){
+ const max=Math.max(1,S.scores[0],S.scores[1]),leader=S.scores[0]===S.scores[1]?-1:(S.scores[0]>S.scores[1]?0:1),gap=Math.abs(S.scores[0]-S.scores[1]);
+ const cards=S.names.map(function(n,i){
+  const status=leader===-1?"تعادل":leader===i?"المتقدم":"المنافس";
+  return '<div class="score team-tone-'+i+(leader===i?' leading':'')+'"><div class="score-top"><span class="score-name">'+esc(n)+'</span><span class="score-status">'+status+'</span></div><strong class="score-value">'+S.scores[i]+'</strong><div class="score-track"><div class="score-fill" style="width:'+Math.round(S.scores[i]/max*100)+'%"></div></div></div>';
+ }).join("");
+ return '<div class="scores scoreboard">'+cards+'</div><div class="scoreboard-summary">'+(leader===-1?'<strong>النتيجة متعادلة</strong>':'فارق النقاط: <strong>'+gap+' نقطة</strong>')+'</div>';
+}
 function renderCats(){
  const chosen=S.picks[S.pickTeam],other=S.picks[1-S.pickTeam];
  $("catGrid").innerHTML=CATS.map(function(c){return '<button class="cat '+(chosen.includes(c)?"selected":"") +' '+(other.includes(c)?"taken":"") +'" data-cat="'+esc(c)+'" '+(other.includes(c)?"disabled":"") +'><img class="cat-bg" src="'+catPhoto(c)+'" alt="" aria-hidden="true"><span class="cat-copy"><b>'+esc(c)+'</b><small>50 سؤالًا في البنك · 6 مختارة للمباراة</small></span></button>'}).join("");
