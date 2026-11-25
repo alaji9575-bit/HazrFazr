@@ -247,6 +247,31 @@ button{border-radius:13px;letter-spacing:.1px}
 /* Settings dialog */
 .home-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.settings-backdrop{position:fixed;inset:0;z-index:11000;display:none;align-items:center;justify-content:center;padding:18px;background:#020916d9;backdrop-filter:blur(10px)}.settings-backdrop.show{display:flex;animation:noticeFade .18s ease-out}.settings-panel{width:min(760px,100%);max-height:90vh;overflow:auto;padding:24px;border:1px solid #53d9d377;border-radius:24px;background:linear-gradient(145deg,#183451,#0b1a30 78%);box-shadow:0 24px 80px #000b}.settings-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.settings-head h2{margin:3px 0 0;color:#fff}.settings-kicker{font-size:12px;color:#8cece3}.settings-close{width:38px;height:38px;padding:0;border-radius:12px;background:#ffffff12;color:#fff}.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.setting-group{padding:17px;border:1px solid #ffffff20;border-radius:17px;background:#07172a88}.setting-group h3{color:#ffcf88;margin-bottom:14px}.setting-check{display:flex;align-items:center;gap:9px;margin:12px 0;color:#e3edf9;font-size:14px}.setting-check input{accent-color:#53d9d3;width:17px;height:17px}.setting-label{display:flex;justify-content:space-between;gap:10px;margin:12px 0 7px;color:#b9cce0;font-size:13px}.setting-label strong{color:#8cece3}.setting-group input[type=range]{width:100%;accent-color:#53d9d3}.setting-group select{width:100%;padding:11px;border-radius:11px;border:1px solid #36516f;background:#0c1b31;color:#fff}.setting-test{width:100%;margin-top:8px}.setting-note{font-size:12px;line-height:1.8;color:#9fb5ce;margin:13px 0 0}.settings-footer{display:flex;justify-content:space-between;gap:10px;margin-top:18px}.light-theme{background:#eaf1f8!important;color:#14243a!important}.light-theme:before{opacity:.04}.light-theme .top,.light-theme .panel,.light-theme .category-col,.light-theme .score,.light-theme .pick-team,.light-theme .question-box{background:#fff!important;color:#14243a!important;border-color:#c5d3e2!important;box-shadow:0 10px 30px #25364b18}.light-theme .tag,.light-theme .muted,.light-theme .hero p,.light-theme .field label{color:#53677f!important}.light-theme .field{background:#f3f7fb;border-color:#d4dfeb}.light-theme .field input,.light-theme .setting-group select{background:#fff;color:#14243a;border-color:#c5d3e2}.light-theme .qbtn,.light-theme .life,.light-theme .secondary,.light-theme .team{background:#e8f0f8!important;color:#19334d!important;border-color:#c2d3e3!important}.light-theme .category-col h3{color:#fff!important}.light-theme .settings-panel{background:#fff;color:#14243a}.light-theme .settings-head h2,.light-theme .setting-group h3{color:#14243a}.light-theme .setting-group{background:#f1f6fb;border-color:#d5e0eb}.light-theme .setting-check,.light-theme .setting-label,.light-theme .setting-note{color:#40566e}.light-theme .settings-close{color:#14243a;background:#e8eef5}.no-effects *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 @media(max-width:620px){.settings-grid{grid-template-columns:1fr}.settings-panel{padding:18px}.home-controls{justify-content:center}}
+
+/* Premium final results screen */
+.results-panel{position:relative;overflow:hidden;text-align:center;padding:clamp(22px,4vw,48px);background:radial-gradient(ellipse at 50% 0%,#245b70aa,transparent 48%),linear-gradient(145deg,#142b49,#0a172b 78%)}
+.results-panel:before{content:"";position:absolute;inset:0 12% auto;height:2px;background:linear-gradient(90deg,transparent,#53d9d3,#ffbd66,transparent)}
+.results-kicker{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid #53d9d355;border-radius:30px;background:#53d9d315;color:#8cece3;font-size:13px;font-weight:900}
+.results-trophy{display:grid;place-items:center;width:82px;height:82px;margin:17px auto 10px;border:1px solid #ffbd6677;border-radius:25px;background:linear-gradient(145deg,#ffbd6630,#53d9d315);font-size:43px;box-shadow:0 12px 36px #ffbd661c}
+.results-panel h1{margin:0 0 14px}
+.results-panel .winner{display:flex;flex-direction:column;align-items:center;gap:5px;margin:0 auto 20px;color:#ffcf88;font-size:clamp(22px,3.6vw,32px);line-height:1.5}
+.results-panel .winner small{color:#b9cce0;font-size:13px;font-weight:600}
+.results-panel .winner.is-tie{color:#8cece3}
+.winner-icon{font-size:26px}
+.final-score-grid{width:min(760px,100%);margin:0 auto}
+.final-score-grid .scores.scoreboard{margin:0 0 14px}
+.final-score-grid .score{padding:17px}
+.final-score-grid .score .score-value{font-size:clamp(30px,5vw,42px)}
+.result-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(760px,100%);margin:0 auto 22px}
+.result-stat{padding:13px 9px;border:1px solid #ffffff20;border-radius:15px;background:linear-gradient(145deg,#1a3654,#102239)}
+.result-stat strong{display:block;color:#8cece3;font-size:clamp(21px,3vw,29px);font-weight:950;font-variant-numeric:tabular-nums}
+.result-stat span{display:block;margin-top:4px;color:#b9cce0;font-size:12px}
+.results-actions{margin-top:8px}
+@media(max-width:520px){.results-panel{padding:22px 14px}.results-trophy{width:68px;height:68px;font-size:36px}.result-stats{gap:7px}.result-stat{padding:11px 5px}.result-stat span{font-size:10px}.results-actions button{flex:1;min-width:0;padding:11px 9px}}
+@media(prefers-reduced-motion:no-preference){.results-panel .results-trophy{animation:resultTrophyIn .55s cubic-bezier(.2,.8,.2,1) both}.results-panel .winner{animation:resultWinnerIn .45s .08s ease-out both}}
+@keyframes resultTrophyIn{from{opacity:0;transform:translateY(12px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes resultWinnerIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
 </style></head>
 <body><div id="rotateNotice"><div class="rotate-icon">↻</div><h2>أدر هاتفك إلى الوضع الأفقي</h2><p>لأفضل تجربة لعب، تُعرض حزر فزر بالعرض مثل ألعاب المسابقات.</p></div><main class="app">
 <header class="top"><div class="brand">✦ حزر فزر</div><div class="top-tools"><div class="tag">تحدّي المعرفة بين فريقين</div><button type="button" class="sound-toggle" id="soundToggle" aria-pressed="true"><span class="sound-icon" id="soundIcon">♫</span><span id="soundLabel">الصوت: تشغيل</span></button></div></header>
@@ -257,7 +282,18 @@ button{border-radius:13px;letter-spacing:.1px}
 <section id="question" class="screen"><div class="scores" id="questionScores"></div><div class="question-layout"><div class="panel question-box"><div class="muted" id="qMeta"></div><div class="timer-wrap" id="timerWrap"><svg class="timer-ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="timer-track" cx="60" cy="60" r="51"></circle><circle class="timer-progress" id="timerProgress" cx="60" cy="60" r="51"></circle></svg><div class="timer" id="timer" role="timer" aria-label="الوقت المتبقي">30</div></div><img id="qImage" class="question-image" alt="" loading="eager"><div class="question-text" id="qText"></div><div class="actions"><button class="secondary" id="pause">إيقاف المؤقت</button><button class="primary" id="showAnswer">إظهار الإجابة</button></div></div><aside class="panel"><h3 class="gold">وسائل المساعدة</h3><div class="lifelines" id="lifelines"></div></aside></div></section>
 <section id="answer" class="screen"><div class="panel" style="text-align:center"><div class="muted">الإجابة الصحيحة</div><div id="answerText" class="answer"></div><div class="actions"><button class="secondary" id="backQuestion">العودة للسؤال</button><button class="primary" id="chooseTeam">تحديد الفريق</button></div></div></section>
 <section id="award" class="screen"><div class="panel"><h2 style="text-align:center">من يستحق النقاط؟</h2><p id="awardPoints" class="gold" style="text-align:center"></p><div class="team-grid"><button class="team" data-winner="0" id="award1"></button><button class="team" data-winner="1" id="award2"></button><button class="team" data-winner="-1">ولا أحد</button></div><div class="actions"><button class="secondary" id="backAnswer">العودة للإجابة</button></div></div></section>
-<section id="results" class="screen"><div class="panel" style="text-align:center"><div class="gold">انتهى التحدي</div><h1>النتيجة النهائية</h1><div id="finalScores" class="scores"></div><div id="winnerText" class="winner"></div><div class="actions"><button class="primary" id="newGame">تحدٍ جديد</button></div></div></section>
+<section id="results" class="screen"><div class="panel results-panel">
+ <div class="results-kicker">ختام المنافسة</div>
+ <div class="results-trophy" aria-hidden="true">🏆</div>
+ <h1>النتيجة النهائية</h1>
+ <div id="winnerText" class="winner"></div>
+ <div id="finalScores" class="final-score-grid"></div>
+ <div id="resultStats" class="result-stats"></div>
+ <div class="actions results-actions">
+  <button class="primary" id="replayMatch">إعادة المباراة ↻</button>
+  <button class="secondary" id="newGame">تحدٍ جديد</button>
+ </div>
+</div></section>
 </main>
 <div id="settingsLayer" class="settings-backdrop" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="settings-panel"><div class="settings-head"><div><span class="settings-kicker">تحكم بتجربتك</span><h2 id="settingsTitle">إعدادات اللعبة</h2></div><button type="button" class="settings-close" id="closeSettings" aria-label="إغلاق">✕</button></div><div class="settings-grid"><section class="setting-group"><h3>الصوت</h3><label class="setting-check"><input id="settingSound" type="checkbox"> تشغيل المؤثرات الصوتية</label><label class="setting-label" for="settingVolume">مستوى الصوت <strong id="volumeValue">70%</strong></label><input id="settingVolume" type="range" min="0" max="100" step="5" value="70"><button type="button" class="secondary setting-test" id="testSound">▶ تجربة الصوت</button></section><section class="setting-group"><h3>الوقت</h3><label class="setting-label" for="settingDuration">مدة السؤال</label><select id="settingDuration"><option value="15">15 ثانية</option><option value="20">20 ثانية</option><option value="30">30 ثانية</option><option value="45">45 ثانية</option><option value="60">60 ثانية</option></select><label class="setting-check"><input id="settingExtraTime" type="checkbox"> تفعيل مساعدة الوقت الإضافي (+15 ثانية)</label><label class="setting-check"><input id="settingCountdown" type="checkbox"> تنبيه صوتي في آخر 5 ثوانٍ</label></section><section class="setting-group"><h3>المظهر</h3><label class="setting-check"><input id="settingLight" type="checkbox"> استخدام المظهر الفاتح</label><label class="setting-check"><input id="settingMotion" type="checkbox"> تفعيل الحركات والمؤثرات</label><p class="setting-note">الصوت والمظهر يتغيران فورًا، أما إعدادات وقت اللعب فتُطبّق عند بدء المباراة التالية.</p></section></div><div class="settings-footer"><button type="button" class="secondary" id="resetSettings">استعادة الافتراضي</button><button type="button" class="primary" id="doneSettings">تم</button></div></div></div>
 <div id="gameNotice" class="game-notice-backdrop" role="dialog" aria-modal="true" aria-labelledby="gameNoticeTitle" aria-describedby="gameNoticeText">
@@ -8428,7 +8464,17 @@ $("showAnswer").onclick=function(){if(!S.current)return;stopTimer();S.paused=fal
 $("backQuestion").onclick=function(){screen("question");S.paused=false;renderQuestion();if(S.seconds>0)runTimer();saveGame()};
 $("chooseTeam").onclick=function(){stopTimer();$("award1").textContent=S.names[0];$("award2").textContent=S.names[1];$("awardPoints").textContent="قيمة السؤال: "+S.current.data[2]*(S.double?2:1)+" نقطة";screen("award")};
 $("backAnswer").onclick=function(){screen("answer")};
-function finishIfDone(){if(S.used.length<36)return false;$("finalScores").innerHTML=scoreMarkup();$("winnerText").textContent=S.scores[0]===S.scores[1]?"تعادل رائع!":"الفائز: "+S.names[S.scores[0]>S.scores[1]?0:1];screen("results");return true}
+function renderResults(){
+ const tied=S.scores[0]===S.scores[1],winner=tied?-1:(S.scores[0]>S.scores[1]?0:1);
+ $("finalScores").innerHTML=scoreMarkup();
+ $("winnerText").classList.toggle("is-tie",tied);
+ $("winnerText").innerHTML=tied
+  ?'<span class="winner-icon">🤝</span><span>تعادل رائع!</span><small>تقاسم الفريقان صدارة التحدي</small>'
+  :'<span class="winner-icon">🏆</span><span>الفائز: '+esc(S.names[winner])+'</span><small>أداء مميز ونقاط مستحقة</small>';
+ const helps=S.lives.reduce(function(total,team){return total+Object.keys(team||{}).length},0);
+ $("resultStats").innerHTML='<div class="result-stat"><strong>'+S.used.length+'</strong><span>سؤالًا تم لعبه</span></div><div class="result-stat"><strong>'+(S.scores[0]+S.scores[1])+'</strong><span>إجمالي النقاط</span></div><div class="result-stat"><strong>'+helps+'</strong><span>وسيلة مساعدة مستخدمة</span></div>';
+}
+function finishIfDone(){if(S.used.length<36)return false;renderResults();screen("results");playGameSound("score");return true}
 $("award").onclick=function(e){
  const b=e.target.closest("[data-winner]");if(!b||!S.current)return;
  const w=Number(b.dataset.winner),pts=S.current.data[2]*(S.double?2:1);
@@ -8459,6 +8505,13 @@ $("lifelines").onclick=function(e){
 };
 $("reset").onclick=function(){if(confirm("هل تريد إنهاء المباراة والعودة إلى البداية؟")){resetMatch();screen("home")}};
 $("newGame").onclick=function(){resetMatch();screen("home")};
+$("replayMatch").onclick=function(){
+ stopTimer();shuffleQuestionBank();saveBank();
+ S.scores=[0,0];S.used=[];S.turn=0;S.current=null;
+ S.seconds=gameSettings.questionTime;S.timerDuration=gameSettings.questionTime;
+ S.paused=false;S.lives=[{},{}];S.double=false;
+ renderBoard();screen("board");
+};
 document.querySelectorAll("[data-go]").forEach(function(b){b.onclick=function(){screen(b.dataset.go)}});
 function restoreGame(){
  stopTimer();
@@ -8488,7 +8541,7 @@ function restoreGame(){
   if(activeScreen==="question"){S.paused=true;renderQuestion();$("pause").textContent="استئناف المؤقت";saveGame()}
   if(activeScreen==="answer"){$("answerText").textContent=S.current.data[1]}
   if(activeScreen==="award"){$("award1").textContent=S.names[0];$("award2").textContent=S.names[1];$("awardPoints").textContent="قيمة السؤال: "+S.current.data[2]*(S.double?2:1)+" نقطة"}
-  if(activeScreen==="results"){$("finalScores").innerHTML=scoreMarkup();$("winnerText").textContent=S.scores[0]===S.scores[1]?"تعادل رائع!":"الفائز: "+S.names[S.scores[0]>S.scores[1]?0:1]}
+  if(activeScreen==="results"){renderResults()}
  }catch(error){
   console.warn("تعذر استعادة المباراة",error);
   stopTimer();activeScreen="home";localStorage.removeItem(MATCH_SAVE_KEY);
