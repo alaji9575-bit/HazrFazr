@@ -195,6 +195,19 @@ button{border-radius:13px;letter-spacing:.1px}
 .score.score-pulse{animation:scorePulse .65s ease-out}
 @keyframes scorePulse{0%{transform:scale(1);box-shadow:0 0 0 #5ee0b500}45%{transform:scale(1.08);box-shadow:0 0 28px #5ee0b566;border-color:#5ee0b5}100%{transform:scale(1);box-shadow:0 0 0 #5ee0b500}}
 @media(max-width:700px){.top-tools{width:100%;justify-content:flex-start}.sound-toggle{padding:7px 11px}}
+
+/* Circular countdown timer */
+.timer-wrap{--timer-color:#62d8c7;position:relative;width:112px;height:112px;margin:13px auto 5px;display:grid;place-items:center;color:var(--timer-color);transition:color .35s ease}
+.timer-ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
+.timer-track,.timer-progress{fill:none;stroke-width:7}
+.timer-track{stroke:#ffffff18}
+.timer-progress{stroke:currentColor;stroke-linecap:round;stroke-dasharray:320.44;stroke-dashoffset:0;filter:drop-shadow(0 0 5px currentColor);transition:stroke-dashoffset .35s linear,color .35s ease}
+.timer-wrap .timer{position:relative;z-index:1;font-size:35px;font-weight:900;line-height:1;color:inherit;font-variant-numeric:tabular-nums}
+.timer-wrap.timer-warn{--timer-color:#ffb454}
+.timer-wrap.timer-critical{--timer-color:#ff766f;animation:ringPulse .7s ease-in-out infinite alternate}
+.timer-wrap.timer-finished{--timer-color:#ff766f}
+@keyframes ringPulse{from{transform:scale(1)}to{transform:scale(1.055)}}
+@media(max-width:700px){.timer-wrap{width:98px;height:98px}.timer-wrap .timer{font-size:31px}}
 </style></head>
 <body><div id="rotateNotice"><div class="rotate-icon">↻</div><h2>أدر هاتفك إلى الوضع الأفقي</h2><p>لأفضل تجربة لعب، تُعرض حزر فزر بالعرض مثل ألعاب المسابقات.</p></div><main class="app">
 <header class="top"><div class="brand">✦ حزر فزر</div><div class="top-tools"><div class="tag">تحدّي المعرفة بين فريقين</div><button type="button" class="sound-toggle" id="soundToggle" aria-pressed="true"><span class="sound-icon" id="soundIcon">♫</span><span id="soundLabel">الصوت: تشغيل</span></button></div></header>
@@ -202,7 +215,7 @@ button{border-radius:13px;letter-spacing:.1px}
 <div class="fields"><div class="field"><label>اسم الفريق الأول</label><input id="team1" maxlength="20" value="الفريق الأول"></div><div class="field"><label>اسم الفريق الثاني</label><input id="team2" maxlength="20" value="الفريق الثاني"></div></div><button class="primary" id="start">ابدأ التحدي ←</button></div></section>
 <section id="categories" class="screen"><div class="panel"><h2>اختيار الفئات</h2><p class="muted">يختار كل فريق 3 فئات مختلفة. <b id="catCount" class="gold">0 / 3</b></p><div class="actions"><button class="primary" id="pickTeam1">اختيار الفريق الأول</button><button class="secondary" id="pickTeam2">اختيار الفريق الثاني</button></div><p id="pickPrompt" class="gold"></p><div id="pickSummary" class="pick-summary"></div><div id="catGrid" class="cat-grid"></div><div class="actions"><button class="secondary" data-go="home">رجوع</button><button class="primary" id="makeBoard" disabled>إنشاء لوحة الأسئلة</button></div></div></section>
 <section id="board" class="screen"><div class="panel"><h2>لوحة الأسئلة</h2><div class="scores" id="boardScores"></div><p class="muted" id="turnText"></p><div id="boardGrid" class="board"></div><div class="actions"><button class="secondary" id="reset">إنهاء والعودة للبداية</button></div></div></section>
-<section id="question" class="screen"><div class="scores" id="questionScores"></div><div class="question-layout"><div class="panel question-box"><div class="muted" id="qMeta"></div><div class="timer" id="timer">30</div><img id="qImage" class="question-image" alt="" loading="eager"><div class="question-text" id="qText"></div><div class="actions"><button class="secondary" id="pause">إيقاف المؤقت</button><button class="primary" id="showAnswer">إظهار الإجابة</button></div></div><aside class="panel"><h3 class="gold">وسائل المساعدة</h3><div class="lifelines" id="lifelines"></div></aside></div></section>
+<section id="question" class="screen"><div class="scores" id="questionScores"></div><div class="question-layout"><div class="panel question-box"><div class="muted" id="qMeta"></div><div class="timer-wrap" id="timerWrap"><svg class="timer-ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="timer-track" cx="60" cy="60" r="51"></circle><circle class="timer-progress" id="timerProgress" cx="60" cy="60" r="51"></circle></svg><div class="timer" id="timer" role="timer" aria-label="الوقت المتبقي">30</div></div><img id="qImage" class="question-image" alt="" loading="eager"><div class="question-text" id="qText"></div><div class="actions"><button class="secondary" id="pause">إيقاف المؤقت</button><button class="primary" id="showAnswer">إظهار الإجابة</button></div></div><aside class="panel"><h3 class="gold">وسائل المساعدة</h3><div class="lifelines" id="lifelines"></div></aside></div></section>
 <section id="answer" class="screen"><div class="panel" style="text-align:center"><div class="muted">الإجابة الصحيحة</div><div id="answerText" class="answer"></div><div class="actions"><button class="secondary" id="backQuestion">العودة للسؤال</button><button class="primary" id="chooseTeam">تحديد الفريق</button></div></div></section>
 <section id="award" class="screen"><div class="panel"><h2 style="text-align:center">من يستحق النقاط؟</h2><p id="awardPoints" class="gold" style="text-align:center"></p><div class="team-grid"><button class="team" data-winner="0" id="award1"></button><button class="team" data-winner="1" id="award2"></button><button class="team" data-winner="-1">ولا أحد</button></div><div class="actions"><button class="secondary" id="backAnswer">العودة للإجابة</button></div></div></section>
 <section id="results" class="screen"><div class="panel" style="text-align:center"><div class="gold">انتهى التحدي</div><h1>النتيجة النهائية</h1><div id="finalScores" class="scores"></div><div id="winnerText" class="winner"></div><div class="actions"><button class="primary" id="newGame">تحدٍ جديد</button></div></div></section>
@@ -8171,7 +8184,7 @@ const CATEGORY_PHOTOS=["category-01.jpg","category-02.jpg","category-03.jpg","ca
  function catPhoto(c){const file=CAT_PHOTOS[c]||CATEGORY_PHOTOS[14];return "./assets/"+file}
 const LIFES=[["call","اتصال بصديق"],["hint","تلميح"],["time","وقت إضافي"],["change","تغيير السؤال"],["double","مضاعفة النقاط"]];
 const $=id=>document.getElementById(id);
-let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0],selected:[],picks:[[],[]],pickTeam:0,used:[],turn:0,current:null,seconds:30,timer:null,paused:false,lives:[{},{}],double:false};
+let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0],selected:[],picks:[[],[]],pickTeam:0,used:[],turn:0,current:null,seconds:30,timerDuration:30,timer:null,paused:false,lives:[{},{}],double:false};
 
 let soundEnabled=true,audioContext=null,lastTimerBeep=99;
 try{soundEnabled=localStorage.getItem("hazrfazr-sound")!=="off"}catch(e){}
@@ -8223,6 +8236,21 @@ function closeGameNotice(){$("gameNotice").classList.remove("show")}
 $("gameNoticeClose").onclick=closeGameNotice;
 $("gameNotice").onclick=function(e){if(e.target===$("gameNotice"))closeGameNotice()};
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeGameNotice()});
+
+function updateTimerVisual(){
+ const total=Math.max(1,S.timerDuration||30),remaining=Math.max(0,Math.min(total,S.seconds));
+ const progress=$("timerProgress"),wrap=$("timerWrap"),text=$("timer");
+ if(!progress||!wrap||!text)return;
+ const circumference=2*Math.PI*51;
+ progress.style.strokeDasharray=String(circumference);
+ progress.style.strokeDashoffset=String(circumference*(1-remaining/total));
+ wrap.classList.toggle("timer-warn",S.seconds<=10&&S.seconds>5);
+ wrap.classList.toggle("timer-critical",S.seconds<=5&&S.seconds>0);
+ wrap.classList.toggle("timer-finished",S.seconds===0);
+ text.textContent=String(S.seconds).padStart(2,"0");
+ text.setAttribute("aria-label","الوقت المتبقي "+S.seconds+" ثانية");
+}
+
 function stopTimer(){clearInterval(S.timer);S.timer=null}
 function screen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id));saveGame()}
 function esc(v){return String(v).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -8248,8 +8276,8 @@ function renderBoard(){
  $("turnText").className="team-turn team-tone-"+S.turn;$("turnText").textContent="الدور الحالي: "+S.names[S.turn]+" — الأسئلة المتبقية: "+(36-S.used.length);
  $("boardGrid").innerHTML=S.selected.map(function(c){return '<div class="category-col"><h3><img class="board-cat-bg" src="'+catPhoto(c)+'" alt="" aria-hidden="true"><span>'+esc(c)+'</span></h3>'+BANK[c].map(function(q,i){const key=c+"-"+i,used=S.used.includes(key);return '<button class="qbtn '+(used?"used":"") +'" data-q="'+esc(key)+'" '+(used?"disabled":"") +'>'+q[2]+'</button>'}).join("")+'</div>'}).join("");
 }
-$("boardGrid").onclick=function(e){const b=e.target.closest("[data-q]");if(!b)return;const key=b.dataset.q;if(S.used.includes(key))return;const i=Number(key.slice(key.lastIndexOf("-")+1)),c=key.slice(0,key.lastIndexOf("-"));S.current={key:key,category:c,index:i,data:BANK[c][i]};S.seconds=30;S.double=false;S.paused=false;renderQuestion();screen("question");playGameSound("question");runTimer()};
-function runTimer(){stopTimer();if(S.seconds<=0){$("timer").textContent="00";return}S.timer=setInterval(function(){if(S.paused)return;S.seconds=Math.max(0,S.seconds-1);$("timer").textContent=String(S.seconds).padStart(2,"0");if(S.seconds<=5&&S.seconds>0){$("timer").classList.add("timer-urgent");if(lastTimerBeep!==S.seconds){lastTimerBeep=S.seconds;playGameSound("tick")}}if(S.seconds===0){$("timer").classList.remove("timer-urgent");stopTimer()}saveGame()},1000);$("timer").textContent=String(S.seconds).padStart(2,"0")}
+$("boardGrid").onclick=function(e){const b=e.target.closest("[data-q]");if(!b)return;const key=b.dataset.q;if(S.used.includes(key))return;const i=Number(key.slice(key.lastIndexOf("-")+1)),c=key.slice(0,key.lastIndexOf("-"));S.current={key:key,category:c,index:i,data:BANK[c][i]};S.seconds=30;S.timerDuration=30;S.double=false;S.paused=false;renderQuestion();screen("question");playGameSound("question");runTimer()};
+function runTimer(){stopTimer();if(S.seconds<=0){updateTimerVisual();return}updateTimerVisual();S.timer=setInterval(function(){if(S.paused)return;S.seconds=Math.max(0,S.seconds-1);updateTimerVisual();if(S.seconds<=5&&S.seconds>0&&lastTimerBeep!==S.seconds){lastTimerBeep=S.seconds;playGameSound("tick")}if(S.seconds===0)stopTimer();saveGame()},1000)}
 
 const QUESTION_VISUALS=[
  [["سورة","القرآن","ليلة القدر","البسملة"],"photo-1609599006353-e629aaabfeae"],
@@ -8304,7 +8332,7 @@ function questionPhoto(question,category){
  function renderQuestion(){
  $("questionScores").innerHTML=scoreMarkup();
  const questionBox=document.querySelector(".question-box");questionBox.classList.remove("question-enter");void questionBox.offsetWidth;questionBox.classList.add("question-enter");
- $("timer").classList.remove("timer-urgent");lastTimerBeep=99;
+ $("timerWrap").classList.remove("timer-warn","timer-critical","timer-finished");S.timerDuration=30;lastTimerBeep=99;updateTimerVisual();
  $("qMeta").className="question-meta team-tone-"+S.turn;$("qMeta").textContent=S.current.category+" • "+S.current.data[2]+" نقطة • دور "+S.names[S.turn];
  $("qText").textContent=S.current.data[0];
  const qi=$("qImage");qi.src=questionPhoto(S.current.data[0],S.current.category);qi.alt="صورة توضيحية: "+S.current.data[0];qi.onerror=function(){this.onerror=null;this.src=catPhoto(S.current.category)};
@@ -8336,10 +8364,10 @@ $("lifelines").onclick=function(e){
   S.lives[S.turn][k]=true;
   const next=choices[Math.floor(Math.random()*choices.length)];
   S.current={key:S.current.key,category:S.current.category,index:S.current.index,data:next.q};
-  S.seconds=30;S.paused=false;stopTimer();renderQuestion();runTimer();saveGame();return;
+  S.seconds=30;S.timerDuration=30;S.paused=false;stopTimer();renderQuestion();runTimer();saveGame();return;
  }
  S.lives[S.turn][k]=true;
- if(k==="time"){S.seconds+=15;$("timer").classList.remove("timer-urgent");lastTimerBeep=99;$("timer").textContent=String(S.seconds).padStart(2,"0");playGameSound("time");if(!S.timer&&!S.paused)runTimer()}
+ if(k==="time"){S.seconds+=15;S.timerDuration+=15;lastTimerBeep=99;updateTimerVisual();playGameSound("time");if(!S.timer&&!S.paused)runTimer()}
  if(k==="double"){S.double=true;showGameNotice("إذا أجاب الفريق إجابة صحيحة فستُضاعف نقاط السؤال.","مضاعفة النقاط","×2")}
  if(k==="hint"){playGameSound("hint");showGameNotice(S.current.data[3]||"فكّر في المعلومة الأساسية المرتبطة بالسؤال.","تلميح السؤال","✦")}
  if(k==="call"){showGameNotice("يمكنكم الآن استشارة صديق شفهيًا قبل اعتماد الإجابة.","اتصال بصديق","☎")}
