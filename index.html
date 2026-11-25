@@ -181,9 +181,23 @@ button{border-radius:13px;letter-spacing:.1px}
 @keyframes noticeFade{from{opacity:0}to{opacity:1}}
 @keyframes noticePop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:520px){.game-notice-backdrop{padding:16px}.game-notice{padding:25px 19px 19px;border-radius:21px}.game-notice p{font-size:15px}}
+
+/* Game sound and feedback effects */
+.top{gap:12px;flex-wrap:wrap}
+.top-tools{display:flex;align-items:center;gap:9px}
+.sound-toggle{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid #53d9d366;border-radius:12px;background:#102640;color:#dffaff;font-size:13px;font-weight:800}
+.sound-toggle[aria-pressed="false"]{border-color:#52647a;color:#a8b8ce;background:#101d30}
+.sound-toggle .sound-icon{font-size:17px}
+.question-box.question-enter{animation:questionEnter .42s cubic-bezier(.2,.8,.2,1) both}
+@keyframes questionEnter{from{opacity:.45;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.timer.timer-urgent{color:#ff9a87;border-color:#ff806f;background:#ff806f18;box-shadow:0 0 26px #ff806f55;animation:timerPulse .65s ease-in-out infinite alternate}
+@keyframes timerPulse{from{transform:scale(1)}to{transform:scale(1.08)}}
+.score.score-pulse{animation:scorePulse .65s ease-out}
+@keyframes scorePulse{0%{transform:scale(1);box-shadow:0 0 0 #5ee0b500}45%{transform:scale(1.08);box-shadow:0 0 28px #5ee0b566;border-color:#5ee0b5}100%{transform:scale(1);box-shadow:0 0 0 #5ee0b500}}
+@media(max-width:700px){.top-tools{width:100%;justify-content:flex-start}.sound-toggle{padding:7px 11px}}
 </style></head>
 <body><div id="rotateNotice"><div class="rotate-icon">↻</div><h2>أدر هاتفك إلى الوضع الأفقي</h2><p>لأفضل تجربة لعب، تُعرض حزر فزر بالعرض مثل ألعاب المسابقات.</p></div><main class="app">
-<header class="top"><div class="brand">✦ حزر فزر</div><div class="tag">تحدّي المعرفة بين فريقين</div></header>
+<header class="top"><div class="brand">✦ حزر فزر</div><div class="top-tools"><div class="tag">تحدّي المعرفة بين فريقين</div><button type="button" class="sound-toggle" id="soundToggle" aria-pressed="true"><span class="sound-icon" id="soundIcon">♫</span><span id="soundLabel">الصوت: تشغيل</span></button></div></header>
 <section id="home" class="screen active"><div class="panel hero"><div class="gold">لعبة جماعية على جهاز واحد</div><h1>من يعرف أكثر؟</h1><p>يختار كل فريق 3 فئات، ثم يتنافس الفريقان على 36 سؤالًا مختارًا عشوائيًا من بنك موسّع، بوقت 30 ثانية لكل سؤال. اجمعوا النقاط واستخدموا وسائل المساعدة للفوز.</p>
 <div class="fields"><div class="field"><label>اسم الفريق الأول</label><input id="team1" maxlength="20" value="الفريق الأول"></div><div class="field"><label>اسم الفريق الثاني</label><input id="team2" maxlength="20" value="الفريق الثاني"></div></div><button class="primary" id="start">ابدأ التحدي ←</button></div></section>
 <section id="categories" class="screen"><div class="panel"><h2>اختيار الفئات</h2><p class="muted">يختار كل فريق 3 فئات مختلفة. <b id="catCount" class="gold">0 / 3</b></p><div class="actions"><button class="primary" id="pickTeam1">اختيار الفريق الأول</button><button class="secondary" id="pickTeam2">اختيار الفريق الثاني</button></div><p id="pickPrompt" class="gold"></p><div id="pickSummary" class="pick-summary"></div><div id="catGrid" class="cat-grid"></div><div class="actions"><button class="secondary" data-go="home">رجوع</button><button class="primary" id="makeBoard" disabled>إنشاء لوحة الأسئلة</button></div></div></section>
@@ -8158,6 +8172,42 @@ const CATEGORY_PHOTOS=["category-01.jpg","category-02.jpg","category-03.jpg","ca
 const LIFES=[["call","اتصال بصديق"],["hint","تلميح"],["time","وقت إضافي"],["change","تغيير السؤال"],["double","مضاعفة النقاط"]];
 const $=id=>document.getElementById(id);
 let S={names:["الفريق الأول","الفريق الثاني"],scores:[0,0],selected:[],picks:[[],[]],pickTeam:0,used:[],turn:0,current:null,seconds:30,timer:null,paused:false,lives:[{},{}],double:false};
+
+let soundEnabled=true,audioContext=null,lastTimerBeep=99;
+try{soundEnabled=localStorage.getItem("hazrfazr-sound")!=="off"}catch(e){}
+function updateSoundButton(){
+ $("soundToggle").setAttribute("aria-pressed",String(soundEnabled));
+ $("soundIcon").textContent=soundEnabled?"♫":"♪";
+ $("soundLabel").textContent=soundEnabled?"الصوت: تشغيل":"الصوت: إيقاف";
+}
+function playGameSound(kind){
+ if(!soundEnabled)return;
+ try{
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx)return;
+  if(!audioContext)audioContext=new AudioCtx();
+  if(audioContext.state==="suspended")audioContext.resume();
+  const now=audioContext.currentTime;
+  const patterns={question:[[523,.10,0],[659,.12,.10]],tick:[[880,.07,0]],score:[[523,.12,0],[659,.12,.13],[784,.2,.27]],neutral:[[392,.12,0],[330,.16,.14]],hint:[[659,.1,0],[784,.14,.11]],time:[[740,.1,0],[880,.12,.12]]};
+  (patterns[kind]||patterns.hint).forEach(function(p){
+   const osc=audioContext.createOscillator(),gain=audioContext.createGain();
+   osc.type="sine";osc.frequency.setValueAtTime(p[0],now+p[2]);
+   gain.gain.setValueAtTime(.0001,now+p[2]);
+   gain.gain.exponentialRampToValueAtTime(.075,now+p[2]+.015);
+   gain.gain.exponentialRampToValueAtTime(.0001,now+p[2]+p[1]);
+   osc.connect(gain);gain.connect(audioContext.destination);
+   osc.start(now+p[2]);osc.stop(now+p[2]+p[1]+.02);
+  });
+ }catch(e){}
+}
+$("soundToggle").onclick=function(){
+ soundEnabled=!soundEnabled;
+ try{localStorage.setItem("hazrfazr-sound",soundEnabled?"on":"off")}catch(e){}
+ updateSoundButton();
+ if(soundEnabled)playGameSound("hint");
+};
+updateSoundButton();
+
 function saveBank(){try{localStorage.setItem("hazrfazr-bank-v1",JSON.stringify(BANK))}catch(error){console.warn("تعذر حفظ بنك الأسئلة",error)}}
 function saveGame(){try{localStorage.removeItem("hazrfazr-save-v1")}catch(error){console.warn("تعذر حذف الحفظ السابق",error)}}
 
@@ -8198,8 +8248,8 @@ function renderBoard(){
  $("turnText").className="team-turn team-tone-"+S.turn;$("turnText").textContent="الدور الحالي: "+S.names[S.turn]+" — الأسئلة المتبقية: "+(36-S.used.length);
  $("boardGrid").innerHTML=S.selected.map(function(c){return '<div class="category-col"><h3><img class="board-cat-bg" src="'+catPhoto(c)+'" alt="" aria-hidden="true"><span>'+esc(c)+'</span></h3>'+BANK[c].map(function(q,i){const key=c+"-"+i,used=S.used.includes(key);return '<button class="qbtn '+(used?"used":"") +'" data-q="'+esc(key)+'" '+(used?"disabled":"") +'>'+q[2]+'</button>'}).join("")+'</div>'}).join("");
 }
-$("boardGrid").onclick=function(e){const b=e.target.closest("[data-q]");if(!b)return;const key=b.dataset.q;if(S.used.includes(key))return;const i=Number(key.slice(key.lastIndexOf("-")+1)),c=key.slice(0,key.lastIndexOf("-"));S.current={key:key,category:c,index:i,data:BANK[c][i]};S.seconds=30;S.double=false;S.paused=false;renderQuestion();screen("question");runTimer()};
-function runTimer(){stopTimer();if(S.seconds<=0){$("timer").textContent="00";return}S.timer=setInterval(function(){if(S.paused)return;S.seconds=Math.max(0,S.seconds-1);$("timer").textContent=String(S.seconds).padStart(2,"0");saveGame();if(S.seconds===0)stopTimer()},1000);$("timer").textContent=String(S.seconds).padStart(2,"0")}
+$("boardGrid").onclick=function(e){const b=e.target.closest("[data-q]");if(!b)return;const key=b.dataset.q;if(S.used.includes(key))return;const i=Number(key.slice(key.lastIndexOf("-")+1)),c=key.slice(0,key.lastIndexOf("-"));S.current={key:key,category:c,index:i,data:BANK[c][i]};S.seconds=30;S.double=false;S.paused=false;renderQuestion();screen("question");playGameSound("question");runTimer()};
+function runTimer(){stopTimer();if(S.seconds<=0){$("timer").textContent="00";return}S.timer=setInterval(function(){if(S.paused)return;S.seconds=Math.max(0,S.seconds-1);$("timer").textContent=String(S.seconds).padStart(2,"0");if(S.seconds<=5&&S.seconds>0){$("timer").classList.add("timer-urgent");if(lastTimerBeep!==S.seconds){lastTimerBeep=S.seconds;playGameSound("tick")}}if(S.seconds===0){$("timer").classList.remove("timer-urgent");stopTimer()}saveGame()},1000);$("timer").textContent=String(S.seconds).padStart(2,"0")}
 
 const QUESTION_VISUALS=[
  [["سورة","القرآن","ليلة القدر","البسملة"],"photo-1609599006353-e629aaabfeae"],
@@ -8253,6 +8303,8 @@ function questionPhoto(question,category){
 
  function renderQuestion(){
  $("questionScores").innerHTML=scoreMarkup();
+ const questionBox=document.querySelector(".question-box");questionBox.classList.remove("question-enter");void questionBox.offsetWidth;questionBox.classList.add("question-enter");
+ $("timer").classList.remove("timer-urgent");lastTimerBeep=99;
  $("qMeta").className="question-meta team-tone-"+S.turn;$("qMeta").textContent=S.current.category+" • "+S.current.data[2]+" نقطة • دور "+S.names[S.turn];
  $("qText").textContent=S.current.data[0];
  const qi=$("qImage");qi.src=questionPhoto(S.current.data[0],S.current.category);qi.alt="صورة توضيحية: "+S.current.data[0];qi.onerror=function(){this.onerror=null;this.src=catPhoto(S.current.category)};
@@ -8269,7 +8321,7 @@ $("award").onclick=function(e){
  const b=e.target.closest("[data-winner]");if(!b||!S.current)return;
  const w=Number(b.dataset.winner),pts=S.current.data[2]*(S.double?2:1);
  if(!S.used.includes(S.current.key))S.used.push(S.current.key);
- if(w>=0){S.scores[w]+=pts;S.turn=1-w}else S.turn=1-S.turn;
+ if(w>=0){S.scores[w]+=pts;S.turn=1-w;playGameSound("score")}else{S.turn=1-S.turn;playGameSound("neutral")}
  stopTimer();S.current=null;S.double=false;
  if(!finishIfDone()){renderBoard();screen("board")}
 };
@@ -8287,9 +8339,9 @@ $("lifelines").onclick=function(e){
   S.seconds=30;S.paused=false;stopTimer();renderQuestion();runTimer();saveGame();return;
  }
  S.lives[S.turn][k]=true;
- if(k==="time"){S.seconds+=15;$("timer").textContent=String(S.seconds).padStart(2,"0");if(!S.timer&&!S.paused)runTimer()}
+ if(k==="time"){S.seconds+=15;$("timer").classList.remove("timer-urgent");lastTimerBeep=99;$("timer").textContent=String(S.seconds).padStart(2,"0");playGameSound("time");if(!S.timer&&!S.paused)runTimer()}
  if(k==="double"){S.double=true;showGameNotice("إذا أجاب الفريق إجابة صحيحة فستُضاعف نقاط السؤال.","مضاعفة النقاط","×2")}
- if(k==="hint"){showGameNotice(S.current.data[3]||"فكّر في المعلومة الأساسية المرتبطة بالسؤال.","تلميح السؤال","✦")}
+ if(k==="hint"){playGameSound("hint");showGameNotice(S.current.data[3]||"فكّر في المعلومة الأساسية المرتبطة بالسؤال.","تلميح السؤال","✦")}
  if(k==="call"){showGameNotice("يمكنكم الآن استشارة صديق شفهيًا قبل اعتماد الإجابة.","اتصال بصديق","☎")}
  renderQuestion();saveGame();
 };
